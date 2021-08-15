@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Clan;
 use App\Models\RunescapeUser;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ClanController extends Controller
 {
+
+    //TODO ADD A GET end point for info
     //
     public function signUpClan_post(Request $request){
 
@@ -38,7 +41,7 @@ class ClanController extends Controller
                 ]);
             }
 
-            $url = config("app.url") . "/api/clan/" . $clan->confirmation_code . "update/members";
+            $url = config("app.url") . "/api/clan/" . $clan->confirmation_code . "/update/members";
             return response(["link" => $url]);
         }else{
 
@@ -49,8 +52,32 @@ class ClanController extends Controller
     public function updateMembers_post(Request $request, $confirmationCode){
 
         $requestedJson = $request->json()->all();
-        ray($confirmationCode);
-        ray($requestedJson);
+        $clan = Clan::where('confirmation_code', '=', $confirmationCode)->first();
+        if(!$clan){
+            return response(["message" => "The clan has not been setup"], 409);
+        }
+
+        foreach ($requestedJson['clanMemberMaps'] as $runescapeUser){
+            $userInDb = RunescapeUser::where('username', '=', $runescapeUser['rsn'])->first();
+            if($userInDb){
+                if($userInDb->clan_id != $clan->id){
+                    $userInDb->clan_id = $clan->id;
+                    $userInDb->admin = 0;
+                }
+                if($userInDb->rank != $runescapeUser['rank']){
+                    $userInDb->rank = $runescapeUser['rank'];
+                }
+                $userInDb->save();
+            }else{
+                RunescapeUser::create([
+                    'username' => $runescapeUser['rsn'],
+                    'rank'=> $runescapeUser['rank'],
+                    'joined_date' => Carbon::parse($runescapeUser['joinedDate']),
+                    'clan_id' => $clan->id
+                ]);
+            }
+        }
+        return response("");
     }
 
 }

@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
 use Tests\TestCase;
+use Webmozart\Assert\Assert;
 
 class ClanControllerTest extends TestCase
 {
@@ -45,8 +46,11 @@ class ClanControllerTest extends TestCase
 
     public function test_updateMembers_post()
     {
+        $clan = Clan::factory()->create([
+            'name' => 'Some Clan'
+        ]);
+        $confirmationCode = $clan->confirmation_code;
 
-        $confirmationCode = 121414;
         $requestData = [
             'clanName' => 'Some Clan',
             'clanMemberMaps' => [
@@ -55,13 +59,44 @@ class ClanControllerTest extends TestCase
             ],
         ];
 
-
-
         $response = $this->postJson("/api/clan/$confirmationCode/update/members", $requestData);
-
 
         $this->assertFalse($this->isAuthenticated());
         $response->assertSuccessful();
+        $members = $clan->members()->get();
+        $this->assertCount(2, $members);
+    }
 
+    public function test_updateMembersHandleRankChange_post()
+    {
+        $clan = Clan::factory()->create([
+            'name' => 'Some Clan'
+        ]);
+
+        $rsn = RunescapeUser::factory()->create([
+            'username' => 'Clanmember 2',
+            'rank' => 'Sapphire',
+            'joined_date' => '5-Jul-2021',
+            'clan_id' => $clan->id
+        ]);
+        $confirmationCode = $clan->confirmation_code;
+
+        $requestData = [
+            'clanName' => 'Some Clan',
+            'clanMemberMaps' => [
+                ["rsn" => "Clanmember 1", "rank" => "Sapphire", "joinedDate" => "5-Jul-2021" ],
+                ["rsn" => "Clanmember 2", "rank" => "Gnome", "joinedDate" => "4-Jul-2021"]
+            ],
+        ];
+
+        $response = $this->postJson("/api/clan/$confirmationCode/update/members", $requestData);
+
+        $this->assertFalse($this->isAuthenticated());
+        $response->assertSuccessful();
+        $members = $clan->members()->get();
+        $this->assertCount(2, $members);
+        $rankChangedMember = $members->where('username', '=', $rsn->username);
+        ray($rankChangedMember);
+        $this->assertEquals('Gnome', $rankChangedMember->first()->rank);
     }
 }

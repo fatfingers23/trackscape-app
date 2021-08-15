@@ -18,4 +18,7 @@ class Clan extends Model
 
     protected $fillable = ['name', 'discord_server_id', 'confirmation_code'];
 
+    public function members(){
+        return $this->hasMany(RunescapeUser::class);
+    }
 }
