@@ -23,6 +23,7 @@ class CreateRunescapeUsersTable extends Migration
             $table->date('joined_date')->nullable();
             $table->string("rank", 50)->nullable();
             $table->string("discord_id", 100)->nullable();
+            $table->date('last_active')->nullable();
         });
     }
 

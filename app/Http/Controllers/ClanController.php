@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RemoveClanMates;
 use App\Models\Clan;
 use App\Models\RunescapeUser;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Jobs\GetClansHiscores;
 
 class ClanController extends Controller
 {
@@ -57,6 +59,7 @@ class ClanController extends Controller
             return response(["message" => "The clan has not been setup"], 409);
         }
 
+        $runescapeUsers = array();
         foreach ($requestedJson['clanMemberMaps'] as $runescapeUser){
             $userInDb = RunescapeUser::where('username', '=', $runescapeUser['rsn'])->first();
             if($userInDb){
@@ -68,15 +71,20 @@ class ClanController extends Controller
                     $userInDb->rank = $runescapeUser['rank'];
                 }
                 $userInDb->save();
+                array_push($runescapeUsers, $userInDb);
             }else{
-                RunescapeUser::create([
+                $runescapeUser = RunescapeUser::create([
                     'username' => $runescapeUser['rsn'],
                     'rank'=> $runescapeUser['rank'],
                     'joined_date' => Carbon::parse($runescapeUser['joinedDate']),
                     'clan_id' => $clan->id
                 ]);
+                array_push($runescapeUsers, $runescapeUser);
             }
         }
+
+//        GetClansHiscores::dispatch($clan)->afterResponse();
+        RemoveClanMates::dispatch($clan, $requestedJson['clanMemberMaps'])->afterResponse();
         return response("");
     }
 
