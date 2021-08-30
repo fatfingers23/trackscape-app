@@ -19,8 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::prefix('clan')->middleware('auth:sanctum')->group( function () {
+Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
     Route::post('signup', [\App\Http\Controllers\ClanController::class, "signUpClan_post"]);
+    Route::get('wom/sync/{discordServerId}', [\App\Http\Controllers\ClanController::class, "updateMembersWom_get"]);
 });
 
 Route::post('clan/{confirmationCode}/update/members', [\App\Http\Controllers\ClanController::class, "updateMembers_post"]);

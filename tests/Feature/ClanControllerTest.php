@@ -34,8 +34,8 @@ class ClanControllerTest extends TestCase
         $response->assertJsonStructure(["link"]);
 
         $clan = Clan::find(1);
-        $this->assertNotNull( $clan);
-        $user = RunescapeUser::where("username", "=", "KikiIM")->get();
+        $this->assertNotNull($clan);
+        $user = RunescapeUser::where("username", "=", strtolower("KikiIM"))->get();
         $this->assertCount(1, $user);
 
         $clanAlreadyFoundResponse = $this->postJson("/api/clan/signup", $requestData);
@@ -54,7 +54,7 @@ class ClanControllerTest extends TestCase
         $requestData = [
             'clanName' => 'Some Clan',
             'clanMemberMaps' => [
-                 ["rsn" => "Clanmember 1", "rank" => "Sapphire", "joinedDate" => "5-Jul-2021" ],
+                ["rsn" => "Clanmember 1", "rank" => "Sapphire", "joinedDate" => "5-Jul-2021"],
                 ["rsn" => "Clanmember 2", "rank" => "Sapphire", "joinedDate" => "4-Jul-2021"]
             ],
         ];
@@ -84,7 +84,7 @@ class ClanControllerTest extends TestCase
         $requestData = [
             'clanName' => 'Some Clan',
             'clanMemberMaps' => [
-                ["rsn" => "Clanmember 1", "rank" => "Sapphire", "joinedDate" => "5-Jul-2021" ],
+                ["rsn" => "Clanmember 1", "rank" => "Sapphire", "joinedDate" => "5-Jul-2021"],
                 ["rsn" => "Clanmember 2", "rank" => "Gnome", "joinedDate" => "4-Jul-2021"]
             ],
         ];

@@ -16,9 +16,10 @@ class CreateClansTable extends Migration
         Schema::create('clans', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string("name",30)->unique();
-            $table->string("discord_server_id",50);
+            $table->string("name", 30)->unique();
+            $table->string("discord_server_id", 50);
             $table->string("confirmation_code", 13)->unique();
+            $table->string('wom_id')->unique()->nullable();
         });
     }
 

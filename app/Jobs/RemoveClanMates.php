@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Clan;
 use App\Models\RunescapeUser;
+use App\Services\WOMService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,16 +21,22 @@ class RemoveClanMates implements ShouldQueue
 
     protected $usersFromWebCall;
 
+    protected $WOMService;
+
+    protected $wom;
+
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Clan $clan, $usersFromWebCall)
+    public function __construct(Clan $clan, $usersFromWebCall, $wom)
     {
         //
         $this->clan = $clan;
         $this->usersFromWebCall = collect($usersFromWebCall);
+        $this->WOMService = new WOMService();
+        $this->wom = $wom;
     }
 
     /**
@@ -40,10 +47,14 @@ class RemoveClanMates implements ShouldQueue
     public function handle()
     {
         //
-//        ray($justRSNFromWebCall);
-        $justRSNFromWebCall = $this->usersFromWebCall->pluck(['rsn']);
+        $justRSNFromWebCall = $this->usersFromWebCall->pluck([$this->wom ? 'username' : 'rsn']);
         $noLongerInClan = $this->clan->members()->pluck('username')->diff($justRSNFromWebCall);
-        foreach ($noLongerInClan as $oldClanMate){
+        foreach ($noLongerInClan as $oldClanMate) {
+            $nameChange = $this->WOMService->checkForNameChange(strtolower($oldClanMate));
+            if ($nameChange) {
+                ray("name change: $oldClanMate");
+                return;
+            }
             $runescapeUser = RunescapeUser::where('username', '=', $oldClanMate);
             $runescapeUser->delete();
         }
