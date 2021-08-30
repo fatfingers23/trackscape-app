@@ -20,9 +20,20 @@ class RunescapeUser extends Model
 {
     use HasFactory;
 
-    public function clanId(){
+    protected $casts = [
+        'admin' => 'boolean',
+    ];
+
+    public function clanId()
+    {
         return $this->hasOne(Clan::class);
     }
 
-    protected $fillable = ['username', 'admin', 'activity_hash' ,'clan_id', 'joined_date', 'rank', 'discord_id'];
+    protected $fillable = ['username', 'admin', 'activity_hash', 'clan_id', 'joined_date', 'rank', 'discord_id', 'wom_id'];
+
+    public function getDonations()
+    {
+        $this->hasMany(Donation::class, 'runescape_username_id', 'id');
+    }
+
 }

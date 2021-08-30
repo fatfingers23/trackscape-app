@@ -16,9 +16,10 @@ class ClansSeeder extends Seeder
     {
         //
         DB::table("clans")->insert([
-            'name' => 'My Clan',
-            'discord_server_id' => '123',
-            'confirmation_code' => '5bdd0b74e9a6c'
+            'name' => 'Insomniacs',
+            'discord_server_id' => '864624676491231242',
+            'confirmation_code' => '5bdd0b74e9a6c',
+            'wom_id' => '1335'
         ]);
     }
 }
