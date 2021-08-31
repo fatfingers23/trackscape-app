@@ -27,8 +27,8 @@ Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
 Route::post('clan/{confirmationCode}/update/members', [\App\Http\Controllers\ClanController::class, "updateMembers_post"]);
 
 
-Route::prefix('donations')->middleware('auth:sanctum')->group(function () {
-    Route::post('add/gold/{discordServerId}/{usersDiscordId}', [\App\Http\Controllers\DonationsController::class, "addDonationGold_post"]);
-    Route::post('list/{discordServerId}/{usersDiscordId}', [\App\Http\Controllers\DonationsController::class, "listDonations_post"]);
+Route::prefix('donations')->middleware(['auth:sanctum', 'runescapeAuth'])->group(function () {
+    Route::post('add/donation', [\App\Http\Controllers\DonationsController::class, "addDonation_post"]);
+    Route::post('list', [\App\Http\Controllers\DonationsController::class, "listDonations_post"]);
 
 });

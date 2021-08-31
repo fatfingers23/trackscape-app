@@ -16,6 +16,6 @@ class Donation extends Model
 
     public function donationType()
     {
-        $this->belongsTo(DonationType::class, "id");
+        $this->belongsTo(D::class, "id");
     }
 }

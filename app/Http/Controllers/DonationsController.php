@@ -12,27 +12,14 @@ use Illuminate\Support\Str;
 class DonationsController extends Controller
 {
     //
-    public function addDonationGold_post(Request $request, $discordServerId, $usersDiscordId)
+    public function addDonation_post(Request $request)
     {
-        //TODO add this check to a middleware and in header
-        $runescapeUserMakingRequest = RunescapeUser::where('discord_id', '=', $usersDiscordId)->first();
-        ray($runescapeUserMakingRequest);
+        //TODO add a check if donation should count towards pot
 
-        if (!$runescapeUserMakingRequest) {
-            return response(["message" => "Appears your discord user has not been setup"], 409);
-        }
-
-        if (!$runescapeUserMakingRequest->admin) {
-            return response(["message" => "Only admins can do this action. Git Gud."], 409);
-        }
-        $clan = Clan::where('discord_server_Id', '=', $discordServerId)->first();
-        if (!$clan) {
-            return response(["message" => "The clan has not been setup."], 409);
-        }
-
+        $clan = $request->get('clan');
         $requestJson = $request->json()->all();
 
-        $donationType = DonationType::where("name", "=", $requestJson["donationType"])->first();
+        $donationType = DonationType::where("name", "=", $requestJson["donationType"])->where('clan_id', '=', $clan->id)->first();
         if ($donationType == null) {
             return response(["message" => "This donation type is not valid"], 409);
         }
@@ -94,26 +81,10 @@ class DonationsController extends Controller
 
     }
 
-    public function listDonations_post(Request $request, $discordServerId, $usersDiscordId)
+    public function listDonations_post(Request $request)
     {
-        //TODO add this check to a middleware and in header
-        $runescapeUserMakingRequest = RunescapeUser::where('discord_id', '=', $usersDiscordId)->first();
-        ray($runescapeUserMakingRequest);
-
-        if (!$runescapeUserMakingRequest) {
-            return response(["message" => "Appears your discord user has not been setup"], 409);
-        }
-
-        if (!$runescapeUserMakingRequest->admin) {
-            return response(["message" => "Only admins can do this action. Git Gud."], 409);
-        }
-        $clan = Clan::where('discord_server_Id', '=', $discordServerId)->first();
-        if (!$clan) {
-            return response(["message" => "The clan has not been setup."], 409);
-        }
-
+        $clan = $request->get('clan');
         $requestJson = $request->json()->all();
-
 
         if ($requestJson["type"] == "all") {
             $donationTypes = DonationType::where('clan_id', '=', $clan->id)->get();
