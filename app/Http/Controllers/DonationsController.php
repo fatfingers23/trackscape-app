@@ -77,7 +77,19 @@ class DonationsController extends Controller
         $requestJson = $request->json()->all();
 
         //TODO and add check for clan
-        $donationType = DonationType::where('name', '=', $requestJson['name']);
+        $donationType = DonationType::where('name', '=', $requestJson['name'])->where('clan_id', '=', $clan->id)
+            ->first();
+
+        if ($donationType) {
+            return response(["message" => "This donation type already exists."], 409);
+        }
+
+        $newDonationType = new DonationType();
+        $newDonationType->name = $requestJson['name'];
+        $newDonationType->clan_id = $clan->id;
+        $newDonationType->save();
+        
+        return response($newDonationType);     
 
     }
 
