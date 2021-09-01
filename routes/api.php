@@ -32,9 +32,10 @@ Route::prefix('donations')->middleware(['auth:sanctum', 'runescapeAuth'])->group
     Route::post('list', [\App\Http\Controllers\DonationsController::class, "listDonations_post"]);
 });
 
-Route::prefix('donations')->middleware('auth:sanctum')->group(function () {
-    Route::post('add/gold/{discordServerId}/{usersDiscordId}', [\App\Http\Controllers\DonationsController::class, "addDonationGold_post"]);
-    Route::post('list/{discordServerId}/{usersDiscordId}', [\App\Http\Controllers\DonationsController::class, "listDonations_post"]);
-    Route::post('add/type/{discordServerId}/{usersDiscordId}', [\App\Http\Controllers\DonationsController::class, "addDonationType_post"]);
-    Route::get('list/topDonations/{discordServerId}', [\App\Http\Controllers\DonationsController::class, "listTopDonations_get"]);
+Route::prefix('donations')->middleware('auth:sanctum', 'runescapeAuth')->group(function () {
+    Route::post('add/gold', [\App\Http\Controllers\DonationsController::class, "addDonationGold_post"]);
+    Route::post('list', [\App\Http\Controllers\DonationsController::class, "listDonations_post"]);
+    Route::post('add/type', [\App\Http\Controllers\DonationsController::class, "addDonationType_post"]);
+    Route::post('list/topDonators', [\App\Http\Controllers\DonationsController::class, "listTopDonators_post"]);
+    Route::delete('remove/type', [\App\Http\Controllers\DonationsController::class, "removeDonationType_delete"]);
 });

@@ -56,24 +56,9 @@ class DonationsController extends Controller
 
     }
 
-    public function addDonationType_post(Request $request, $discordServerId, $usersDiscordId)
+    public function addDonationType_post(Request $request)
     {
-        //TODO add this check to a middleware and in header
-        $runescapeUserMakingRequest = RunescapeUser::where('discord_id', '=', $usersDiscordId)->first();
-        ray($runescapeUserMakingRequest);
-
-        if (!$runescapeUserMakingRequest) {
-            return response(["message" => "Appears your discord user has not been setup"], 409);
-        }
-
-        if (!$runescapeUserMakingRequest->admin) {
-            return response(["message" => "Only admins can do this action. Git Gud."], 409);
-        }
-        $clan = Clan::where('discord_server_Id', '=', $discordServerId)->first();
-        if (!$clan) {
-            return response(["message" => "The clan has not been setup."], 409);
-        }
-
+        $clan = $request->get('clan');
         $requestJson = $request->json()->all();
 
         //TODO and add check for clan
@@ -90,6 +75,28 @@ class DonationsController extends Controller
         $newDonationType->save();
         
         return response($newDonationType);     
+
+    }
+
+    public function removeDonationType_delete(Request $request)
+    {
+        $clan = $request->get('clan');
+        $requestJson = $request->json()->all();
+
+        $donationType = DonationType::where('name', '=', $requestJson['name'])
+            ->where('clan_id', '=', $clan->id)
+            ->first();
+
+        if($donationType){
+            $donationType->delete();
+            return response($donationType);
+        }
+
+        return response(["message" => "The donation type was not found or does not exist currently."], 409);
+    }
+
+    public function listTopDonators_post(Request $request)
+    {
 
     }
 
