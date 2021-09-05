@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Competition;
 use App\Models\RunescapeUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
@@ -45,5 +46,14 @@ class WOMService
         }
 
         return false;
+    }
+
+    //TODO just going have them make comp on line then can sync it :)
+    public function createCompetition(Competition $competition, $metric, $name)
+    {
+        $requestToSend = [
+            'title' => $competition->donationType()->name,
+            ''
+        ]
     }
 }
