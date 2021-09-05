@@ -24,7 +24,13 @@ Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
     Route::get('wom/sync/{discordServerId}', [\App\Http\Controllers\ClanController::class, "updateMembersWom_get"]);
 });
 
-Route::post('clan/{confirmationCode}/update/members', [\App\Http\Controllers\ClanController::class, "updateMembers_post"]);
+
+Route::prefix('clan')->group(function () {
+    Route::post('{confirmationCode}/update/members', [\App\Http\Controllers\ClanController::class, "updateMembers_post"]);
+    Route::post('chatlog', [\App\Http\Controllers\ChatLoggerController::class, "chatLog_post"]);
+    Route::middleware(['runescapeAuth'])->get('chatlog/{amount}', [\App\Http\Controllers\ChatLoggerController::class, "chatLog_get"]);
+
+});
 
 
 Route::prefix('donations')->middleware(['auth:sanctum', 'runescapeAuth'])->group(function () {
