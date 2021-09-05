@@ -15,7 +15,7 @@ class ChatlogIdFromGame extends Migration
     {
         Schema::table('chat_logs', function (Blueprint $table) {
             //
-            $table->bigInteger('chat_id');
+            $table->bigInteger('chat_id')->nullable();
         });
     }
 

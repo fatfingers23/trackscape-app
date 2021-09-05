@@ -32,7 +32,7 @@ class DonationsController extends Controller
         }
 
         if (Str::endsWith($amountFromRequest, "k")) {
-            $amount = $this->parseAmount($amountFromRequest, "m");
+            $amount = $this->parseAmount($amountFromRequest, "k");
         }
 
         if ($amount == null) {
@@ -147,9 +147,8 @@ class DonationsController extends Controller
     private function parseAmount($amount, $amountType)
     {
         $splitAmount = explode($amountType, $amount);
-
-        $numericAmount = intval($splitAmount[0]);
-        if (!is_int($numericAmount)) {
+        $numericAmount = floatval($splitAmount[0]);
+        if (!is_float($numericAmount)) {
             return null;
         }
 
