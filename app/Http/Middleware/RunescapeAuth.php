@@ -29,7 +29,6 @@ class RunescapeAuth
             return response(["message" => "Proper auth headers have not been set"], 401);
         }
 
-        ray($discordUserId);
         $runescapeUserMakingRequest = RunescapeUser::where('discord_id', '=', $discordUserId)->first();
 
         if (!$runescapeUserMakingRequest) {
