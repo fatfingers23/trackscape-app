@@ -49,6 +49,8 @@ class WOMService
     }
 
     //TODO just going have them make comp on line then can sync it :)
+    //https://wiseoldman.net/docs/competitions
+    //Make a html page for people to enter conifmation code once comp as been linked
     public function createCompetition(Competition $competition, $metric, $name)
     {
         $requestToSend = [
