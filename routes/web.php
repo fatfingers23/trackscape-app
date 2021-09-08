@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,20 +14,15 @@
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
+//Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+//    return Inertia::render('Dashboard');
+//})->name('dashboard');
+//
+//
+//Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
+//    Route::post('signup', [\App\Http\Controllers\ClanController::class, "signUpClan_post"]);
+//});
 
+Route::get('confirmation/{clanConfirmationCode}/{compId}', [\App\Http\Controllers\CompetitionController::class, 'confirmationCode_get']);
 
-Route::prefix('clan')->middleware('auth:sanctum')->group( function () {
-    Route::post('signup', [\App\Http\Controllers\ClanController::class, "signUpClan_post"]);
-});

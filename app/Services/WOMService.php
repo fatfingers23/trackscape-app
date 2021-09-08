@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Competition;
+use App\Models\DonationType;
 use App\Models\RunescapeUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
@@ -48,14 +49,42 @@ class WOMService
         return false;
     }
 
+    public function getCompetition($compId)
+    {
+        $response = Http::get("$this->baseUrl/competitions/$compId");
+        if (!$response->successful()) {
+            return null;
+        }
+
+        return $response->json();
+    }
+
     //TODO just going have them make comp on line then can sync it :)
     //https://wiseoldman.net/docs/competitions
     //Make a html page for people to enter conifmation code once comp as been linked
-    public function createCompetition(Competition $competition, $metric, $name)
+    public function linkCompetition($compId, $clanId)
     {
-        $requestToSend = [
-            'title' => $competition->donationType()->name,
-            ''
-        ]
+
+        $responseData = $this->getCompetition($compId);
+        if ($responseData == null) {
+            return false;
+        }
+
+        if ($responseData['type'] == 'team') {
+            //TODO not implemented yet
+            return false;
+        }
+
+        $newDonationType = new DonationType();
+        $newDonationType->name = $responseData['title'];
+        $newDonationType->clan_id = $clanId;
+        $newDonationType->save();
+
+        $newCompetition = new Competition();
+        $newCompetition->wom_comp_id = $responseData['id'];
+        $newCompetition->clan_id = $clanId;
+        $newCompetition->donation_type_id = $newDonationType->Id;
+        $newCompetition->save();
+        return true;
     }
 }
