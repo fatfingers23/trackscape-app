@@ -8,6 +8,7 @@ use App\Models\DonationType;
 use App\Models\RunescapeUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 class DonationsController extends Controller
 {
@@ -73,8 +74,8 @@ class DonationsController extends Controller
         $newDonationType->name = $requestJson['name'];
         $newDonationType->clan_id = $clan->id;
         $newDonationType->save();
-        
-        return response($newDonationType);     
+
+        return response($newDonationType);
 
     }
 
@@ -95,8 +96,47 @@ class DonationsController extends Controller
         return response(["message" => "The donation type was not found or does not exist currently."], 409);
     }
 
-    public function listTopDonators_post(Request $request)
+    public function listTopDonatorsByType_post(Request $request)
     {
+        $clan = $request->get('clan');
+        $requestJson = $request->json()->all();
+
+        $donationType = DonationType::where('name', '=', $requestJson['name'])
+            ->where('clan_id', '=', $clan->id)
+            ->first();
+
+        if(!$donationType){
+            return response(["message" => "That donation type does not exist", 409]);
+        }
+
+        $donations = Donation::where('donation_type_id', '=', $donationType->id)->get();
+        $donatorsArray = array();
+        foreach($donations as $donation){
+            $user = RunescapeUser::where('id', '=', $donation->runescape_user_id)->first();
+            $amount = $donation->amount;
+            array_push($donatorsArray, ["name" => $user->username, "amount" => $amount]);
+        }
+        $donators = collect($donatorsArray);
+
+        $uniqueDonators = $donators->pluck('name')->unique();
+        $uniqueDonatorsWithTotals = [];
+        foreach ($uniqueDonators as $user) {
+            $sum = $donators->where('name', '=', $user)->sum('amount');
+            array_push($uniqueDonatorsWithTotals, ["name" => $user, "total" => $sum]);
+        };
+
+        $result = Arr::sort($uniqueDonatorsWithTotals, function($donator) {
+            return $donator['total'];
+        });
+
+        $resultReversed = array_reverse($result);
+
+        if(count($resultReversed) <= 5){
+            $resultReversed = array_slice($resultReversed, 0, 5);
+        }
+
+        return response($resultReversed);
+
 
     }
 
@@ -159,7 +199,6 @@ class DonationsController extends Controller
             return response(["name" => $runescapeUser->username, "total" => number_format($total)],);
 
         }
-
 
     }
 
