@@ -8,6 +8,7 @@ use App\Models\DonationType;
 use App\Models\RunescapeUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 class DonationsController extends Controller
 {
@@ -56,28 +57,86 @@ class DonationsController extends Controller
 
     }
 
-    public function addDonationType_post(Request $request, $discordServerId, $usersDiscordId)
+    public function addDonationType_post(Request $request)
     {
-        //TODO add this check to a middleware and in header
-        $runescapeUserMakingRequest = RunescapeUser::where('discord_id', '=', $usersDiscordId)->first();
-        ray($runescapeUserMakingRequest);
-
-        if (!$runescapeUserMakingRequest) {
-            return response(["message" => "Appears your discord user has not been setup"], 409);
-        }
-
-        if (!$runescapeUserMakingRequest->admin) {
-            return response(["message" => "Only admins can do this action. Git Gud."], 409);
-        }
-        $clan = Clan::where('discord_server_Id', '=', $discordServerId)->first();
-        if (!$clan) {
-            return response(["message" => "The clan has not been setup."], 409);
-        }
-
+        $clan = $request->get('clan');
         $requestJson = $request->json()->all();
 
         //TODO and add check for clan
-        $donationType = DonationType::where('name', '=', $requestJson['name']);
+        $donationType = DonationType::where('name', '=', $requestJson['name'])->where('clan_id', '=', $clan->id)
+            ->first();
+
+        if ($donationType) {
+            return response(["message" => "This donation type already exists."], 409);
+        }
+
+        $newDonationType = new DonationType();
+        $newDonationType->name = $requestJson['name'];
+        $newDonationType->clan_id = $clan->id;
+        $newDonationType->save();
+
+        return response($newDonationType);
+
+    }
+
+    public function removeDonationType_delete(Request $request)
+    {
+        $clan = $request->get('clan');
+        $requestJson = $request->json()->all();
+
+        $donationType = DonationType::where('name', '=', $requestJson['name'])
+            ->where('clan_id', '=', $clan->id)
+            ->first();
+
+        if($donationType){
+            $donationType->delete();
+            return response($donationType);
+        }
+
+        return response(["message" => "The donation type was not found or does not exist currently."], 409);
+    }
+
+    public function listTopDonatorsByType_post(Request $request)
+    {
+        $clan = $request->get('clan');
+        $requestJson = $request->json()->all();
+
+        $donationType = DonationType::where('name', '=', $requestJson['name'])
+            ->where('clan_id', '=', $clan->id)
+            ->first();
+
+        if(!$donationType){
+            return response(["message" => "That donation type does not exist", 409]);
+        }
+
+        $donations = Donation::where('donation_type_id', '=', $donationType->id)->get();
+        $donatorsArray = array();
+        foreach($donations as $donation){
+            $user = RunescapeUser::where('id', '=', $donation->runescape_user_id)->first();
+            $amount = $donation->amount;
+            array_push($donatorsArray, ["name" => $user->username, "amount" => $amount]);
+        }
+        $donators = collect($donatorsArray);
+
+        $uniqueDonators = $donators->pluck('name')->unique();
+        $uniqueDonatorsWithTotals = [];
+        foreach ($uniqueDonators as $user) {
+            $sum = $donators->where('name', '=', $user)->sum('amount');
+            array_push($uniqueDonatorsWithTotals, ["name" => $user, "total" => $sum]);
+        };
+
+        $result = Arr::sort($uniqueDonatorsWithTotals, function($donator) {
+            return $donator['total'];
+        });
+
+        $resultReversed = array_reverse($result);
+
+        if(count($resultReversed) <= 5){
+            $resultReversed = array_slice($resultReversed, 0, 5);
+        }
+
+        return response($resultReversed);
+
 
     }
 
@@ -140,7 +199,6 @@ class DonationsController extends Controller
             return response(["name" => $runescapeUser->username, "total" => number_format($total)],);
 
         }
-
 
     }
 
