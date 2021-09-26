@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Clan;
+use App\Models\Donation;
 use App\Models\RunescapeUser;
 use App\Services\WOMService;
 use Illuminate\Bus\Queueable;
@@ -55,7 +56,9 @@ class RemoveClanMates implements ShouldQueue
                 ray("name change: $oldClanMate");
                 return;
             }
-            $runescapeUser = RunescapeUser::where('username', '=', $oldClanMate);
+            $runescapeUser = RunescapeUser::where('username', '=', $oldClanMate)->first();
+            ray($runescapeUser);
+            Donation::where('runescape_user_id', '=', $runescapeUser->id)->delete();
             $runescapeUser->delete();
         }
     }

@@ -112,7 +112,7 @@ class ClanController extends Controller
 
 
         $WOMGroupMembers = $this->WOMService->getGroupPlayers($clan->wom_id);
-        ray($WOMGroupMembers);
+
         if ($WOMGroupMembers->count() == 0) {
             return response(["message" => "No clanmates found on wiseoldman"], 409);
         }
@@ -120,7 +120,8 @@ class ClanController extends Controller
         //TODO PROBABLY CHANGE THIS TO A SHARED LOGIC WITH ABOVE METHOD
         $runescapeUsers = array();
         foreach ($WOMGroupMembers as $runescapeUser) {
-            $userInDb = RunescapeUser::where('username', '=', $runescapeUser['username'])->first();
+            $userInDb = RunescapeUser::where('username', '=', $runescapeUser['username'])->orWhere('wom_id', '=', $runescapeUser['id'])->first();
+
             if ($userInDb) {
                 if ($userInDb->clan_id != $clan->id) {
                     $userInDb->clan_id = $clan->id;
@@ -133,6 +134,7 @@ class ClanController extends Controller
                 $userInDb->save();
                 array_push($runescapeUsers, $userInDb);
             } else {
+
                 $runescapeUser = RunescapeUser::create([
                     'username' => $runescapeUser['username'],
                     'rank' => $runescapeUser['role'],

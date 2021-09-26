@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Donation;
 use App\Models\RunescapeUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
@@ -35,15 +36,38 @@ class WOMService
         }
 
         $newNameData = $nameChanges->where('oldName', '=', $username)->sortBy('resolvedAt')->first();
-        ray($newNameData);
-        $user = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])->first();
 
-        if ($user != null) {
-            $user->username = $newNameData["newName"];
-            $user->save();
-            return true;
+        if ($newNameData) {
+            //Temp code to remove some broken name changes
+            $this->bugCleanUp($newNameData);
+
+            $user = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])->first();
+            if ($user != null) {
+                $user->username = $newNameData["newName"];
+                $user->save();
+                return true;
+            }
         }
-
         return false;
+    }
+
+
+    private function bugCleanUp($newNameData)
+    {
+        $checkForMistakenNameChange = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])
+            ->where('username', '=', $newNameData['newName'])->first();
+
+        if ($checkForMistakenNameChange) {
+
+            $donations = Donation::where('runescape_user_id', '=', $checkForMistakenNameChange->id)->get();
+            if ($donations) {
+                foreach ($donations as $donation) {
+                    $donation->runescape_user_id = $checkForMistakenNameChange->id;
+                    $donation->save();
+                }
+            }
+
+            $checkForMistakenNameChange->delete();
+        }
     }
 }
