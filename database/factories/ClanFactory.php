@@ -25,7 +25,7 @@ class ClanFactory extends Factory
             //
             'name' => $this->faker->name(),
             'discord_server_id' => $this->faker->uuid(),
-            'confirmation_code' =>  uniqid()
+            'confirmation_code' => uniqid()
         ];
     }
 }

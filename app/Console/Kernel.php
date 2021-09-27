@@ -29,7 +29,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
         $schedule->call(function () {
             $clans = Clan::all();
             $womService = new WOMService();
@@ -41,7 +40,7 @@ class Kernel extends ConsoleKernel
                 RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
                 GetClansHiscores::dispatchAfterResponse($clan);
             }
-        })->everyMinute(); //->twiceDaily("12:00", "23:00");
+        })->twiceDaily("12:00", "23:00");
     }
 
     /**

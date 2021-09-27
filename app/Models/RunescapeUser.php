@@ -22,6 +22,7 @@ class RunescapeUser extends Model
 
     protected $casts = [
         'admin' => 'boolean',
+        'last_active' => 'datetime:m-d-y'
     ];
 
     public function clanId()
