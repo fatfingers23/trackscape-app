@@ -48,16 +48,20 @@ class RemoveClanMates implements ShouldQueue
     public function handle()
     {
         //
+        ray("Remove clan mates job started");
+
+
         $justRSNFromWebCall = $this->usersFromWebCall->pluck([$this->wom ? 'username' : 'rsn']);
-        $noLongerInClan = $this->clan->members()->pluck('username')->diff($justRSNFromWebCall);
-        foreach ($noLongerInClan as $oldClanMate) {
+        $noLongerInClan = $this->clan->members()->pluck('username'); //;
+        foreach ($noLongerInClan->diff($justRSNFromWebCall) as $oldClanMate) {
+            ray($oldClanMate);
             $nameChange = $this->WOMService->checkForNameChange(strtolower($oldClanMate));
             if ($nameChange) {
                 ray("name change: $oldClanMate");
                 return;
             }
             $runescapeUser = RunescapeUser::where('username', '=', $oldClanMate)->first();
-            ray($runescapeUser);
+//            ray($runescapeUser);
             Donation::where('runescape_user_id', '=', $runescapeUser->id)->delete();
             $runescapeUser->delete();
         }

@@ -2,8 +2,13 @@
 
 namespace App\Console;
 
+use App\Jobs\GetClansHiscores;
+use App\Jobs\RemoveClanMates;
+use App\Models\Clan;
+use App\Services\WOMService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -19,12 +24,24 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            $clans = Clan::all();
+            $womService = new WOMService();
+            foreach ($clans as $clan) {
+                $WOMGroupMembers = $womService->getGroupPlayers($clan->wom_id);
+                if ($WOMGroupMembers->count() != 0) {
+                    $womService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
+                }
+                RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
+                GetClansHiscores::dispatchAfterResponse($clan);
+            }
+        })->everyMinute(); //->twiceDaily("12:00", "23:00");
     }
 
     /**
@@ -34,7 +51,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

@@ -64,12 +64,13 @@ class ClanController extends Controller
 
     public function updateMembers_post(Request $request, $confirmationCode)
     {
-
+        dd("Broken. is too coupled to wom need to find a change");
         $requestedJson = $request->json()->all();
         $clan = Clan::where('confirmation_code', '=', $confirmationCode)->first();
         if (!$clan) {
             return response(["message" => "The clan has not been setup"], 409);
         }
+
 
         $runescapeUsers = array();
         foreach ($requestedJson['clanMemberMaps'] as $runescapeUser) {
@@ -112,40 +113,14 @@ class ClanController extends Controller
 
 
         $WOMGroupMembers = $this->WOMService->getGroupPlayers($clan->wom_id);
-
         if ($WOMGroupMembers->count() == 0) {
             return response(["message" => "No clanmates found on wiseoldman"], 409);
         }
 
-        //TODO PROBABLY CHANGE THIS TO A SHARED LOGIC WITH ABOVE METHOD
-        $runescapeUsers = array();
-        foreach ($WOMGroupMembers as $runescapeUser) {
-            $userInDb = RunescapeUser::where('username', '=', $runescapeUser['username'])->orWhere('wom_id', '=', $runescapeUser['id'])->first();
+        $this->WOMService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
+        RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
+        GetClansHiscores::dispatchAfterResponse($clan);
 
-            if ($userInDb) {
-                if ($userInDb->clan_id != $clan->id) {
-                    $userInDb->clan_id = $clan->id;
-                    $userInDb->admin = 0;
-                }
-                if ($userInDb->rank != $runescapeUser['role']) {
-                    $userInDb->rank = $runescapeUser['role'];
-                }
-                $userInDb->wom_id = $runescapeUser['id'];
-                $userInDb->save();
-                array_push($runescapeUsers, $userInDb);
-            } else {
-
-                $runescapeUser = RunescapeUser::create([
-                    'username' => $runescapeUser['username'],
-                    'rank' => $runescapeUser['role'],
-                    'wom_id' => $runescapeUser['id'],
-                    'clan_id' => $clan->id
-                ]);
-                array_push($runescapeUsers, $runescapeUser);
-            }
-        }
-
-        RemoveClanMates::dispatch($clan, $WOMGroupMembers, true)->afterResponse();
         return response("");
 
     }

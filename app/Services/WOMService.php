@@ -52,6 +52,41 @@ class WOMService
     }
 
 
+    public function updateClanMembersFromWOM($WOMGroupMembers, $clan)
+    {
+
+
+        //TODO PROBABLY CHANGE THIS TO A SHARED LOGIC WITH ABOVE METHOD
+        $runescapeUsers = array();
+        foreach ($WOMGroupMembers as $runescapeUser) {
+            $userInDb = RunescapeUser::where('username', '=', $runescapeUser['username'])->orWhere('wom_id', '=', $runescapeUser['id'])->first();
+
+            if ($userInDb) {
+                if ($userInDb->clan_id != $clan->id) {
+                    $userInDb->clan_id = $clan->id;
+                    $userInDb->admin = 0;
+                }
+                if ($userInDb->rank != $runescapeUser['role']) {
+                    $userInDb->rank = $runescapeUser['role'];
+                }
+                $userInDb->wom_id = $runescapeUser['id'];
+                $userInDb->save();
+                array_push($runescapeUsers, $userInDb);
+            } else {
+
+                $runescapeUser = RunescapeUser::create([
+                    'username' => $runescapeUser['username'],
+                    'rank' => $runescapeUser['role'],
+                    'wom_id' => $runescapeUser['id'],
+                    'clan_id' => $clan->id
+                ]);
+                array_push($runescapeUsers, $runescapeUser);
+            }
+        }
+
+    }
+
+
     private function bugCleanUp($newNameData)
     {
         $checkForMistakenNameChange = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Clan;
 use App\Models\RunescapeUser;
+use App\Services\RunescapeJobs;
 use Carbon\Carbon;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -20,14 +21,13 @@ class GetClansHiscores implements ShouldQueue
 
     protected $clan;
 
-    protected $hiscoreUrl = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=";
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Clan $clan )
+    public function __construct(Clan $clan)
     {
         //
         $this->clan = $clan;
@@ -40,23 +40,9 @@ class GetClansHiscores implements ShouldQueue
      */
     public function handle()
     {
-
-        //
-        $members = $this->clan->members()->get();
-        //TODO got to get just xp to make hash of cause rank changes
-        ray($members);
-        foreach ($members as $member){
-            $response = Http::get($this->hiscoreUrl . $member->username);
-            if($response->successful()){
-                $newActivityHash = md5($response->body());
-//                ray($newActivityHash);
-//                ray($member->activity_hash);
-                if($newActivityHash != $member->activity_hash){
-                    $member->activity_hash = $newActivityHash;
-                    $member->last_active = Carbon::now();
-                    $member->save();
-                }
-            }
-        }
+        ray("Get Activity job has started");
+        $jobService = new RunescapeJobs();
+        $jobService->setLastActiveForAClan($this->clan);
     }
+
 }
