@@ -49,8 +49,7 @@ class RemoveClanMates implements ShouldQueue
     {
         //
         ray("Remove clan mates job started");
-
-
+        
         $justRSNFromWebCall = $this->usersFromWebCall->pluck([$this->wom ? 'username' : 'rsn']);
         $noLongerInClan = $this->clan->members()->pluck('username'); //;
         foreach ($noLongerInClan->diff($justRSNFromWebCall) as $oldClanMate) {

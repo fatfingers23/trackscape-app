@@ -119,7 +119,7 @@ class ClanController extends Controller
 
         $this->WOMService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
         RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
-        GetClansHiscores::dispatchAfterResponse($clan);
+        //GetClansHiscores::dispatchAfterResponse($clan);
 
         return response("");
 

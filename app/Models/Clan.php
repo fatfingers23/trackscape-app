@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $name
  * @property $discordServerId
  * @property $confirmationCode
+ * @property $discord_webhook
  */
 class Clan extends Model
 {
@@ -18,7 +19,8 @@ class Clan extends Model
 
     protected $fillable = ['name', 'discord_server_id', 'confirmation_code'];
 
-    public function members(){
+    public function members()
+    {
         return $this->hasMany(RunescapeUser::class);
     }
 }

@@ -89,6 +89,7 @@ class WOMService
 
     private function bugCleanUp($newNameData)
     {
+        ray($newNameData);
         $checkForMistakenNameChange = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])
             ->where('username', '=', $newNameData['newName'])->first();
 

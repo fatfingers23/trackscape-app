@@ -42,6 +42,7 @@ Route::prefix('donations')->middleware(['auth:sanctum', 'runescapeAuth'])->group
     Route::delete('remove/type', [\App\Http\Controllers\DonationsController::class, "removeDonationType_delete"]);
 });
 
-Route::prefix('player')->middleware(['auth:sanctum', 'runescapeAuth'])->group(function () {
+Route::prefix('
+')->middleware(['auth:sanctum', 'runescapeAuth'])->group(function () {
     Route::get('inactive/{days}', [PlayerController::class, "getInactive"]);
 });

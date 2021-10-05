@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
                 RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
                 GetClansHiscores::dispatchAfterResponse($clan);
             }
-        })->twiceDaily("12:00", "23:00");
+        })->twiceDaily(12, 23);
     }
 
     /**

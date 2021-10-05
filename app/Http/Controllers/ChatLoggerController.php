@@ -4,12 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\ChatLog;
 use App\Models\Clan;
+use App\Services\WebhookService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class ChatLoggerController extends Controller
 {
+
+    protected $webhookService;
+
+    public function __construct(WebhookService $webhookService)
+    {
+        $this->webhookService = $webhookService;
+    }
+
     /**
      * End point to save a chat messaege from in game
      * @param Request $request
@@ -39,6 +48,7 @@ class ChatLoggerController extends Controller
                     $newChat->chat_id = $messageId;
 
                     $newChat->save();
+                    $this->webhookService($clan, $newChat);
                 }
             }
         }
