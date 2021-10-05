@@ -48,7 +48,7 @@ class ChatLoggerController extends Controller
                     $newChat->chat_id = $messageId;
 
                     $newChat->save();
-                    $this->webhookService($clan, $newChat);
+                    $this->webhookService->sendSimpleMessage($clan, $newChat);
                 }
             }
         }
