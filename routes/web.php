@@ -12,6 +12,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -26,6 +28,9 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 
-Route::prefix('clan')->middleware('auth:sanctum')->group( function () {
+Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
     Route::post('signup', [\App\Http\Controllers\ClanController::class, "signUpClan_post"]);
 });
+
+
+Route::get('/invite/{rsn}', [\App\Http\Controllers\Invite::class, 'invite']);
