@@ -34,3 +34,7 @@ Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
 
 
 Route::get('/invite/{rsn}', [\App\Http\Controllers\Invite::class, 'invite']);
+Route::get('/invite', function () {
+    return redirect("https://discord.gg/PWy8pm782p");
+
+});
