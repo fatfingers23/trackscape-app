@@ -35,7 +35,18 @@ class ChatLoggerController extends Controller
         }
 
         $requestedJson = $request->json();
-        NewChatHandlerJob::dispatch($clan, $requestedJson, $this->webhookService);
+
+        foreach ($requestedJson as $requestedChat) {
+            if ($requestedChat["chatType"] == "CLAN") {
+                $stringToHash = $requestedChat["sender"] . $requestedChat['message'];
+                $messageHash = hash('crc32c', $stringToHash);
+                if (!Cache::has($messageHash)) {
+                    Cache::put($messageHash, $requestedChat, $seconds = 10);
+                    NewChatHandlerJob::dispatch($clan, $requestedChat, $this->webhookService);
+                }
+            }
+        }
+
         return response("");
     }
 
