@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\NewChatHandlerJob;
 use App\Models\ChatLog;
 use App\Models\Clan;
 use App\Services\WebhookService;
@@ -27,31 +28,14 @@ class ChatLoggerController extends Controller
     public function chatLog_post(Request $request)
     {
         $lookUpClanId = $request->header('Authorization');
+
         $clan = Clan::where('confirmation_code', '=', $lookUpClanId)->first();
         if (!$clan) {
             return response(["message" => "A clan was not found for this confirmation code"], 409);
         }
 
         $requestedJson = $request->json();
-
-        foreach ($requestedJson as $chatLog) {
-            if ($chatLog["chatType"] == "CLAN") {
-                $messageId = substr($chatLog["id"], 0, -3);
-                if (!Cache::has($messageId)) {
-                    Cache::put($messageId, $chatLog, $seconds = 10);
-                    $newChat = new ChatLog();
-                    $newChat->time_sent = Carbon::now('UTC');
-//                    $newChat->time_sent = Carbon::parse($chatLog["timestamp"]);
-                    $newChat->sender = $chatLog["sender"];
-                    $newChat->message = $chatLog["message"];
-                    $newChat->clan_id = $clan->id;
-                    $newChat->chat_id = $messageId;
-
-                    $newChat->save();
-                    $this->webhookService->sendSimpleMessage($clan, $newChat);
-                }
-            }
-        }
+        NewChatHandlerJob::dispatch($clan, $requestedJson, $this->webhookService);
         return response("");
     }
 

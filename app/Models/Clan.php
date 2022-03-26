@@ -23,4 +23,9 @@ class Clan extends Model
     {
         return $this->hasMany(RunescapeUser::class);
     }
+
+    public function collectionLogLeaderBoard()
+    {
+        return $this->hasMany(CollectionLog::class)->with('player')->orderBy('collection_count', 'desc')->get();
+    }
 }
