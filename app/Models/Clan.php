@@ -28,4 +28,9 @@ class Clan extends Model
     {
         return $this->hasMany(CollectionLog::class)->with('player')->orderBy('collection_count', 'desc')->get();
     }
+
+    public function bossPbLeaderBoard()
+    {
+        return $this->hasMany(CollectionLog::class)->with('player')->orderBy('kill_time', 'asc')->get();
+    }
 }

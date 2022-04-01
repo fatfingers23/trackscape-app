@@ -23,8 +23,6 @@ class NewChatHandlerJob implements ShouldQueue
     protected array $chatLog;
     private WebhookService $webhookService;
 
-    //Hashed version of To talk in your clan's channel, start each line of chat with // or /c.
-    private string $hashLoginMessage = "1915cdd2";
 
     public function __construct(Clan $clan, array $chatLog, WebhookService $webhookService)
     {
@@ -43,13 +41,26 @@ class NewChatHandlerJob implements ShouldQueue
         $newChat->message = $this->chatLog["message"];
         $newChat->clan_id = $this->clan->id;
         $newChat->chat_id = $messageId;
-
         $newChat->save();
-        $matches = [];
-        $match = preg_match('/(.*)received a new collection log item: [^0-9]*(.*)\)$/', $newChat->message, $matches);
-        if ($match == 1) {
-            RecordCollectionLogJob::dispatch($this->webhookService, $this->clan, $matches);
+
+        $collectionLogMatches = [];
+        $collectionLogMatch = preg_match('/(.*)received a new collection log item: [^0-9]*(.*)\)$/',
+            $newChat->message, $collectionLogMatches);
+        if ($collectionLogMatch == 1) {
+            RecordCollectionLogJob::dispatch($this->webhookService, $this->clan, $collectionLogMatches);
         }
+
+        $personalBestMatches = [];
+        $personalBestMatch = preg_match('/(.*) has achieved a new (.*) personal best: (.*)/',
+            $newChat->message, $personalBestMatches);
+        if ($personalBestMatch == 1) {
+            PersonalBestJob::dispatch($this->clan, $personalBestMatches);
+        }
+        $lowerCaseMessage = strtolower($newChat->message);
+        if (str_starts_with($lowerCaseMessage, '!pb')) {
+            PersonalBestCommandJob::dispatch($newChat);
+        }
+
         $this->webhookService->sendSimpleMessage($this->clan, $newChat);
 
     }

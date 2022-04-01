@@ -21,4 +21,9 @@ class ChatLog extends Model
         'time_sent' => 'datetime:d/m H:i:s',
     ];
 
+    public function clan()
+    {
+        return $this->hasOne(Clan::class);
+    }
+
 }

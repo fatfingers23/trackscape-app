@@ -14,6 +14,8 @@ class ChatLoggerController extends Controller
 {
 
     protected $webhookService;
+    //Hashed version of To talk in your clan's channel, start each line of chat with // or /c.
+    private string $hashLoginMessage = "1915cdd2";
 
     public function __construct(WebhookService $webhookService)
     {
@@ -40,9 +42,11 @@ class ChatLoggerController extends Controller
             if ($requestedChat["chatType"] == "CLAN") {
                 $stringToHash = $requestedChat["sender"] . $requestedChat['message'];
                 $messageHash = hash('crc32c', $stringToHash);
-                if (!Cache::has($messageHash)) {
-                    Cache::put($messageHash, $requestedChat, $seconds = 10);
-                    NewChatHandlerJob::dispatch($clan, $requestedChat, $this->webhookService);
+                if ($this->hashLoginMessage !== $messageHash) {
+                    if (!Cache::has($messageHash)) {
+                        Cache::put($messageHash, $requestedChat, $seconds = 10);
+                        NewChatHandlerJob::dispatch($clan, $requestedChat, $this->webhookService);
+                    }
                 }
             }
         }
