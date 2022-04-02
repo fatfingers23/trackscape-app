@@ -52,7 +52,8 @@ class RunescapeJobs
             }
             return md5($stringToHash);
         } else {
-            ray($response);;
+            ray($rsn->username);
+            ray($response->body());
         }
         return "";
     }

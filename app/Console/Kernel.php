@@ -8,6 +8,7 @@ use App\Models\Clan;
 use App\Services\WOMService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
@@ -37,8 +38,10 @@ class Kernel extends ConsoleKernel
                 if ($WOMGroupMembers->count() != 0) {
                     $womService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
                 }
-                RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
-                GetClansHiscores::dispatchAfterResponse($clan);
+                Bus::chain([
+                    new RemoveClanMates($clan, $WOMGroupMembers, true),
+                    new GetClansHiscores($clan),
+                ])->dispatch();
             }
         })->twiceDaily(12, 23);
     }
