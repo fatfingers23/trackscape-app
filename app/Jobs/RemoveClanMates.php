@@ -2,7 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\BossPersonalBest;
 use App\Models\Clan;
+use App\Models\CollectionLog;
 use App\Models\Donation;
 use App\Models\RunescapeUser;
 use App\Services\WOMService;
@@ -61,6 +63,8 @@ class RemoveClanMates implements ShouldQueue
             if (!$nameChange) {
                 $runescapeUser = RunescapeUser::where('username', '=', $oldClanMate)->first();
                 Log::info("Deleted: $runescapeUser->username");
+                CollectionLog::where('runescape_users_id', $runescapeUser->id)->delete();
+                BossPersonalBest::where('runescape_users_id', $runescapeUser->id)->delete();
                 $runescapeUser->delete();
             } else {
                 Log::info("name change: $oldClanMate");
