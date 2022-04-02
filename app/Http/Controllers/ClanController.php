@@ -9,6 +9,7 @@ use App\Services\WOMService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Jobs\GetClansHiscores;
+use Illuminate\Support\Facades\Bus;
 
 class ClanController extends Controller
 {
@@ -111,15 +112,14 @@ class ClanController extends Controller
             return response(["message" => "Wise old man has not been setup for the clan"], 409);
         }
 
-
         $WOMGroupMembers = $this->WOMService->getGroupPlayers($clan->wom_id);
-        if ($WOMGroupMembers->count() == 0) {
-            return response(["message" => "No clanmates found on wiseoldman"], 409);
+        if ($WOMGroupMembers->count() != 0) {
+            $this->WOMService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
         }
-
-        $this->WOMService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
-        RemoveClanMates::dispatchAfterResponse($clan, $WOMGroupMembers, true);
-        //GetClansHiscores::dispatchAfterResponse($clan);
+        Bus::chain([
+            new RemoveClanMates($clan, $WOMGroupMembers, true),
+            new GetClansHiscores($clan),
+        ])->dispatch();
 
         return response("");
 
@@ -138,5 +138,5 @@ class ClanController extends Controller
                 'collectionLogs' => $clan->collectionLogLeaderBoard()
             ]);
     }
-    
+
 }
