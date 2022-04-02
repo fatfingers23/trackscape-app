@@ -12,6 +12,8 @@
 |
 */
 
+use App\Http\Controllers\ClanController;
+use App\Http\Controllers\PbController;
 use Illuminate\Support\Facades\Route;
 
 //
@@ -30,7 +32,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 
 
 Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
-    Route::post('signup', [\App\Http\Controllers\ClanController::class, "signUpClan_post"]);
+    Route::post('signup', [ClanController::class, "signUpClan_post"]);
 });
 
 
@@ -40,4 +42,10 @@ Route::get('/invite', function () {
 
 });
 
-Route::get('/collectionlog/{clanId}', [\App\Http\Controllers\CollectionLogsController::class, 'index']);
+Route::get('/collectionlog/{clanId}', [\App\Http\Controllers\CollectionLogsController::class, 'index'])->name('collection-logs');
+Route::get('/pb/{clanId}', [PbController::class, 'index'])->name('pb');
+
+
+Route::name('clan')->prefix('clan')->group(function () {
+    Route::get('/{clanName}', [ClanController::class, "landingPage"])->name('landing-page');
+});

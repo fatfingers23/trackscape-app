@@ -125,4 +125,18 @@ class ClanController extends Controller
 
     }
 
+    public function landingPage($clanName)
+    {
+        $clan = Clan::where('name', $clanName)->first();
+        if (!$clan) {
+            return response("", 404);
+        }
+
+        return view('clan-landing-page',
+            [
+                'clan' => $clan,
+                'collectionLogs' => $clan->collectionLogLeaderBoard()
+            ]);
+    }
+    
 }
