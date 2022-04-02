@@ -62,10 +62,9 @@ class RemoveClanMates implements ShouldQueue
                 $runescapeUser = RunescapeUser::where('username', '=', $oldClanMate)->first();
                 Log::info("Deleted: $runescapeUser->username");
                 $runescapeUser->delete();
+            } else {
+                Log::info("name change: $oldClanMate");
             }
-            Log::info("name change: $oldClanMate");
-            return;
-
         }
     }
 }
