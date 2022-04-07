@@ -11,6 +11,7 @@
     "php": "^8.0",
     "ext-simplexml": "*",
     "fideloper/proxy": "^4.4",
+    "filament/forms": "^2.0",
     "fruitcake/laravel-cors": "^2.0",
     "guzzlehttp/guzzle": "^7.3",
     "laravel/framework": "^8.40",
