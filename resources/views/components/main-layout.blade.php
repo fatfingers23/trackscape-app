@@ -35,13 +35,14 @@
 </head>
 <body>
 
+<x-main-menu :clan="$clan ?? null"/>
 
-@isset($clan)
-    <x-clan-menu :clan="$clan"/>
-@endisset
-@empty($clan)
-    <x-main-menu/>
-@endempty
+{{--@isset($clan)--}}
+{{--    <x-clan-menu :clan="$clan"/>--}}
+{{--@endisset--}}
+{{--@empty($clan)--}}
+{{--    <x-main-menu/>--}}
+{{--@endempty--}}
 <main>
 
     <div class="mt-0 md:mt-5 shadow-xl min-h-full">

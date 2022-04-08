@@ -4,7 +4,7 @@
         much information on why we need the items below.</h3>
 
     <p class="py-4"><span class="underline">Wise Old Man Id</span> -
-        Our website uses discord Wise Old Man Groups to track clan mates. From this, we can find clan members,
+        Our website uses Wise Old Man Groups to track clan mates. From this, we can find clan members,
         detect name changes, and help keep attendance records. You can find your WOM id on the left panel of
         your groups' page. At this point this is required.
     <p class="py-4"><span class="underline">Discord Server id</span> -
@@ -15,7 +15,9 @@
             directions.</a></p>
     <p class="py-4"><span class="underline">Discord Web Hook</span> -
         Our website uses discord Web Hook to forward in-game messages to your Discord and future notifications.
-        This is optional.
+        This is optional. Can follow <a class="link"
+                                        href="https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks">
+            these directions on how to create on </a>
     </p>
-    
+
 </div>

@@ -153,6 +153,6 @@ return [
     |
     */
 
-    'render_on_redirect' => true,
+    'render_on_redirect' => false,
 
 ];

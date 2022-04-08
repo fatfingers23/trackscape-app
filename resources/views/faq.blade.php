@@ -19,19 +19,19 @@
 
                     <div tabindex="0"
                          class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box my-6">
-                        <input type="checkbox" class="peer">
+                        <input type="checkbox" class="peer" id="faq-1">
 
                         <div class="collapse-title text-xl font-medium peer-checked:text-secondary-content">
                             How do i set up chat log?
                         </div>
-                        <div class="collapse-content peer-checked:text-secondary-content text-left">
+                        <div class="collapse-content peer-checked:text-secondary-content text-left" for="faq-1">
                             <p class="py-4">We use the RuneLite plug <a class="link"
                                                                         href="https://runelite.net/plugin-hub/show/chat-logger">Chat
                                     Logger</a> to record chat
                                 logs. This is where we get information for leaderboards, new personal bests, new
                                 collection log items, and more. The more who use it the better leaderboards work. Follow
                                 the list below for set up instructions</p>
-                            <ul class="list-decimal">
+                            <ul class="list-decimal px-4 md:px-0">
                                 <li>Install the Chat Logger plugin to runelite.</li>
                                 <li>Inside of the settings for the plugin make sure to have Clan Chat Checked and Remote
                                     Clan Chat under Remote Submission.
@@ -56,7 +56,9 @@
                             What information do you store?
                         </div>
                         <div class="collapse-content peer-checked:text-secondary-content text-left">
-                            <p class="py-4">As of 4/7/2022 we do not store chat log data for extended time.We check for
+                            <p class="py-4">As of 4/7/2022 we do not store chat log data for extended time.<span
+                                        class="underline">And do not plan on doing that without warning</span>. We check
+                                for
                                 any of the information that we use for our graphs then pass it along to discord.
                                 Besides,
                                 that
