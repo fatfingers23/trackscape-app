@@ -41,7 +41,9 @@ class NewChatHandlerJob implements ShouldQueue
         $newChat->message = $this->chatLog["message"];
         $newChat->clan_id = $this->clan->id;
         $newChat->chat_id = $messageId;
-        $newChat->save();
+        if ($this->clan->save_chat_logs) {
+            $newChat->save();
+        }
 
         $collectionLogMatches = [];
         $collectionLogMatch = preg_match('/(.*)received a new collection log item: [^0-9]*(.*)\)$/',
@@ -58,10 +60,9 @@ class NewChatHandlerJob implements ShouldQueue
         }
         $lowerCaseMessage = strtolower($newChat->message);
         if (str_starts_with($lowerCaseMessage, '!pb')) {
-            PersonalBestCommandJob::dispatch($newChat);
+            PersonalBestCommandJob::dispatch($newChat)->delay(3);
         }
 
         $this->webhookService->sendSimpleMessage($this->clan, $newChat);
-
     }
 }

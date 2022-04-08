@@ -125,7 +125,7 @@ class ClanController extends Controller
 
     }
 
-    public function landingPage($clanName)
+    public function landingPage($clanName, $new = false)
     {
         $clan = Clan::where('name', $clanName)->first();
         if (!$clan) {
@@ -135,7 +135,7 @@ class ClanController extends Controller
         return view('clan-landing-page',
             [
                 'clan' => $clan,
-                'collectionLogs' => $clan->collectionLogLeaderBoard()
+                'new' => $new
             ]);
     }
 

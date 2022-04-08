@@ -10,6 +10,7 @@
   "require": {
     "php": "^8.0",
     "ext-simplexml": "*",
+    "doctrine/dbal": "^3.3",
     "filament/forms": "^2.0",
     "fruitcake/laravel-cors": "^2.0",
     "guzzlehttp/guzzle": "^7.3",

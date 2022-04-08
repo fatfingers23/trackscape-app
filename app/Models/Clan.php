@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $discordServerId
  * @property $confirmationCode
  * @property $discord_webhook
+ * @property $save_chat_logs
  */
 class Clan extends Model
 {

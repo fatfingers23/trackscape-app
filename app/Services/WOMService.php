@@ -38,8 +38,6 @@ class WOMService
         $newNameData = $nameChanges->where('oldName', '=', $username)->sortBy('resolvedAt')->first();
 
         if ($newNameData) {
-            //Temp code to remove some broken name changes
-            $this->bugCleanUp($newNameData);
 
             $user = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])->first();
             if ($user != null) {
@@ -86,24 +84,10 @@ class WOMService
 
     }
 
-
-    private function bugCleanUp($newNameData)
+    public function checkValidGroupId($womId)
     {
-        ray($newNameData);
-        $checkForMistakenNameChange = RunescapeUser::where('wom_id', '=', $newNameData['playerId'])
-            ->where('username', '=', $newNameData['newName'])->first();
-
-        if ($checkForMistakenNameChange) {
-
-            $donations = Donation::where('runescape_user_id', '=', $checkForMistakenNameChange->id)->get();
-            if ($donations) {
-                foreach ($donations as $donation) {
-                    $donation->runescape_user_id = $checkForMistakenNameChange->id;
-                    $donation->save();
-                }
-            }
-
-            $checkForMistakenNameChange->delete();
-        }
+        $response = Http::get("$this->baseUrl/groups/$womId");
+        return $response->successful();
     }
+
 }

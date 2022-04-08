@@ -20,6 +20,11 @@ Route::get('/', function () {
     return view('home');
 });
 
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
+
+
 Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
     Route::post('signup', [ClanController::class, "signUpClan_post"]);
 });
@@ -36,5 +41,5 @@ Route::get('/pb/{clanId}', [PbController::class, 'index'])->name('pb');
 
 
 Route::name('clan')->prefix('clan')->group(function () {
-    Route::get('/{clanName}', [ClanController::class, "landingPage"])->name('landing-page');
+    Route::get('/{clanName}/{new?}', [ClanController::class, "landingPage"])->name('landing-page');
 });

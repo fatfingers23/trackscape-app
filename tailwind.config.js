@@ -14,7 +14,12 @@ module.exports = {
         extend: {
             fontFamily: {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+
             },
+            colors: {
+                danger: 'hsl(var(--er))',
+                primary: 'rgb(var(--er))'
+            }
         },
     },
 
@@ -24,5 +29,5 @@ module.exports = {
         },
     },
 
-    plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography'), require('daisyui')],
+    plugins: [require('daisyui'), require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 };
