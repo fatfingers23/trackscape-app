@@ -40,7 +40,6 @@ class GetClansHiscores implements ShouldQueue
      */
     public function handle()
     {
-        ray("Get Activity job has started");
         $jobService = new RunescapeJobs();
         $jobService->setLastActiveForAClan($this->clan);
     }

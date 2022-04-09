@@ -46,7 +46,6 @@ class PersonalBestCommandJob implements ShouldQueue
         $bossName = trim(explode('!pb', $lowerCashMessage)[1]);
         $runescapeUser = RunescapeUser::where('username', $this->chatLog->sender)->where('clan_id', $this->chatLog->clan_id)->first();
         if ($runescapeUser) {
-            ray(1);
             $time = $this->apiClient->getUsersPb($this->chatLog->sender, $bossName);
             if ($time) {
                 ray($time);

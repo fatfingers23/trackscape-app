@@ -16,19 +16,13 @@ use App\Http\Controllers\ClanController;
 use App\Http\Controllers\PbController;
 use Illuminate\Support\Facades\Route;
 
-//
-//Route::get('/', function () {
-//    return Inertia::render('Welcome', [
-//        'canLogin' => Route::has('login'),
-//        'canRegister' => Route::has('register'),
-//        'laravelVersion' => Application::VERSION,
-//        'phpVersion' => PHP_VERSION,
-//    ]);
-//});
+Route::get('/', function () {
+    return view('home');
+});
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
 
 
 Route::prefix('clan')->middleware('auth:sanctum')->group(function () {
@@ -47,5 +41,9 @@ Route::get('/pb/{clanId}', [PbController::class, 'index'])->name('pb');
 
 
 Route::name('clan')->prefix('clan')->group(function () {
-    Route::get('/{clanName}', [ClanController::class, "landingPage"])->name('landing-page');
+    Route::get('/search', [ClanController::class, 'clanSearch'])->name('search');
+    Route::get('/{id}/members', [ClanController::class, 'memberList'])->name('members');
+    Route::get('/{clanName}/{new?}', [ClanController::class, "landingPage"])->name('landing-page');
+
+
 });

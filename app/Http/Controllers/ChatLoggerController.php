@@ -53,17 +53,6 @@ class ChatLoggerController extends Controller
 
         return response("");
     }
-
-    /**
-     * Endpoint to get most recent chat messages
-     */
-    public function chatLog_get(Request $request, $amount)
-    {
-
-        $clan = $request->get('clan');
-        $chatLogs = ChatLog::where('clan_id', '=', $clan->id)->distinct()->orderBy('time_sent', 'desc')->take($amount)->get();
-        ray($chatLogs);
-        return $chatLogs;
-    }
+    
 }
 

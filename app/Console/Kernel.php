@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Jobs\GetClansHiscores;
 use App\Jobs\RemoveClanMates;
+use App\Jobs\WomSync;
 use App\Models\Clan;
 use App\Services\WOMService;
 use Illuminate\Console\Scheduling\Schedule;
@@ -32,16 +33,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             $clans = Clan::all();
-            $womService = new WOMService();
             foreach ($clans as $clan) {
-                $WOMGroupMembers = $womService->getGroupPlayers($clan->wom_id);
-                if ($WOMGroupMembers->count() != 0) {
-                    $womService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
-                }
-                Bus::chain([
-                    new RemoveClanMates($clan, $WOMGroupMembers, true),
-                    new GetClansHiscores($clan),
-                ])->dispatch();
+                WomSync::dispatch($clan);
             }
         })->twiceDaily(12, 23);
     }

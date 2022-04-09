@@ -125,7 +125,7 @@ class ClanController extends Controller
 
     }
 
-    public function landingPage($clanName)
+    public function landingPage($clanName, $new = false)
     {
         $clan = Clan::where('name', $clanName)->first();
         if (!$clan) {
@@ -135,8 +135,24 @@ class ClanController extends Controller
         return view('clan-landing-page',
             [
                 'clan' => $clan,
-                'collectionLogs' => $clan->collectionLogLeaderBoard()
+                'new' => $new
             ]);
+    }
+
+    public function clanSearch()
+    {
+        $clans = Clan::orderBy('name')->paginate(10);
+        return view('clan.search', ['clans' => $clans]);
+    }
+
+    public function memberList($id)
+    {
+        $clan = Clan::find($id);
+        if ($clan) {
+            return view('clan.member-list-view', ['clan' => $clan]);
+        }
+        return response('', 404);
+
     }
 
 }
