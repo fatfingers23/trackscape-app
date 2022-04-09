@@ -34,6 +34,7 @@
     </div>
     <div class="navbar-end md:flex">
         <ul class="menu menu-horizontal p-0 hidden lg:flex">
+            <x-menu-list-items :clan="$clan"/>
 
         </ul>
         <select class="select" data-choose-theme>
