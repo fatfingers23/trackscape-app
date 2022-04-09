@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Jobs\WomSync;
 use App\Models\Clan;
 use App\Services\WOMService;
 use Closure;
@@ -35,7 +36,7 @@ class RegisterForm extends Component implements Forms\Contracts\HasForms
     {
         $formFields = [
             TextInput::make('name')->
-            required()->placeholder('Clan Name')->disableLabel()->maxLength(30)->different('clanName'),
+            required()->placeholder('Clan Name')->disableLabel()->maxLength(30)->unique('clans', 'name'),
             TextInput::make('wom_id')->required()->placeholder('Wise Old Man Group Id')->disableLabel()->numeric()
                 ->rules([function () {
                     return function (string $attribute, $value, Closure $fail) {
@@ -44,10 +45,10 @@ class RegisterForm extends Component implements Forms\Contracts\HasForms
                             $fail("This is not a valid Wise Old Man group id.");
                         }
                     };
-                }])->unique(),
+                }])->unique('clans', 'wom_id'),
             TextInput::make('discord_server_id')->placeholder('Discord Server Id')->disableLabel()->numeric()->maxLength(50),
             TextInput::make('discord_webHook')->placeholder('Discord Web Hook')->disableLabel()->url()->maxLength(255),
-
+            TextInput::make('sign_up_code')->placeholder('Sign up code')->disableLabel()->required()
         ];
 
         foreach ($formFields as $field) {
@@ -58,14 +59,15 @@ class RegisterForm extends Component implements Forms\Contracts\HasForms
 
     }
 
-
     public function create()
     {
         $values = $this->form->getState();
-        $values['confirmation_code'] = uniqid();
-        $clan = Clan::create($values);
-        $this->redirectRoute('clanlanding-page', [$clan->name, true]);
-
+        if ($values['sign_up_code'] == 'varrock') {
+            $values['confirmation_code'] = uniqid();
+            $clan = Clan::create($values);
+            WomSync::dispatch($clan);
+            $this->redirectRoute('clanlanding-page', [$clan->name, true]);
+        }
     }
 
 

@@ -1,4 +1,5 @@
 @isset($clan)
+  
     <li tabindex="0">
         <a @class([
 'active' => Route::current()->getName() == 'collection-logs'|| Route::current()->getName() == 'pb'
@@ -19,8 +20,15 @@
             </li>
         </ul>
     </li>
+
+    <li><a class=" {{Route::current()->getName() == 'clanmembers' ? 'active' : ''}}"
+           href="{{route('clanmembers', $clan->id)}}">Members</a></li>
+
+
 @endisset
 
 <li><a class=" {{Route::current()->getName() == 'faq' ? 'active' : ''}}"
        href="{{route('faq')}}">FAQ</a></li>
 
+<li><a class=" {{Route::current()->getName() == 'clansearch' ? 'active' : ''}}"
+       href="{{route('clansearch')}}">Clan Lookup</a></li>

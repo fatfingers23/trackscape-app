@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Jobs\GetClansHiscores;
+use App\Jobs\RemoveClanMates;
+use App\Models\Clan;
 use App\Models\Donation;
 use App\Models\RunescapeUser;
 use App\Models\User;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 
 class WOMService
@@ -16,7 +20,7 @@ class WOMService
         $response = Http::get("$this->baseUrl/groups/$groupId/members");
 
         if (!$response->successful()) {
-            return [];
+            return collect();
         }
 
         return collect($response->json());
@@ -88,6 +92,18 @@ class WOMService
     {
         $response = Http::get("$this->baseUrl/groups/$womId");
         return $response->successful();
+    }
+
+    public function syncClan(Clan $clan)
+    {
+        $WOMGroupMembers = $this->getGroupPlayers($clan->wom_id);
+        if ($WOMGroupMembers->count() != 0) {
+            $this->updateClanMembersFromWOM($WOMGroupMembers, $clan);
+        }
+        Bus::chain([
+            new RemoveClanMates($clan, $WOMGroupMembers, true),
+            new GetClansHiscores($clan),
+        ])->dispatch();
     }
 
 }

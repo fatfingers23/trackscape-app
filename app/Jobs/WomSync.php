@@ -3,24 +3,19 @@
 namespace App\Jobs;
 
 use App\Models\Clan;
-use App\Models\RunescapeUser;
-use App\Services\RunescapeJobs;
-use Carbon\Carbon;
-use Illuminate\Bus\Batchable;
+use App\Services\WOMService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Http;
 
-class GetClansHiscores implements ShouldQueue
+class WomSync implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $clan;
-
+    protected Clan $clan;
 
     /**
      * Create a new job instance.
@@ -40,8 +35,8 @@ class GetClansHiscores implements ShouldQueue
      */
     public function handle()
     {
-        $jobService = new RunescapeJobs();
-        $jobService->setLastActiveForAClan($this->clan);
+        //
+        $womService = new WOMService();
+        $womService->syncClan($this->clan);
     }
-
 }

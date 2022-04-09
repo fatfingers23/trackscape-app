@@ -1,17 +1,25 @@
 <x-main-layout :clan="$clan">
     <x-slot name="content">
         <div class="hero min-h-screen bg-base-200">
-            <div class="hero-content text-center">
-                <div class="max-w-md">
+            <div class="hero-content text-center ">
+                <div class="max-w-full   ">
                     <h1 class="text-5xl font-bold">Welcome to {{$clan->name}}</h1>
-                    <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi
-                        exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-                    <button class="btn btn-primary">Get Started</button>
+                    {{--                    <p class="py-6">Enter at your own risk. Gnomes can't reach your shoulder but can bite.</p>--}}
+                    <div class="flex justify-center">
+                        @isset($clan->discord_server_id)
+                            <iframe src="https://discord.com/widget?id={{$clan->discord_server_id}}&theme=dark&username="
+                                    width="350"
+                                    height="500" allowtransparency="true" frameborder="0"
+                                    sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                                    class="py-6"></iframe>
+
+                        @endisset
+
+                    </div>
                 </div>
             </div>
         </div>
 
-        <label for="new-clan-modal" class="btn modal-button">open modal</label>
 
         <!-- Put this part before </body> tag -->
         <input type="checkbox" id="new-clan-modal" class="modal-toggle">

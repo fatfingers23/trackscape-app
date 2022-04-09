@@ -37,15 +37,10 @@
 
 <x-main-menu :clan="$clan ?? null"/>
 
-{{--@isset($clan)--}}
-{{--    <x-clan-menu :clan="$clan"/>--}}
-{{--@endisset--}}
-{{--@empty($clan)--}}
-{{--    <x-main-menu/>--}}
-{{--@endempty--}}
+
 <main>
 
-    <div class="mt-0 md:mt-5 shadow-xl min-h-full">
+    <div class="mt-0 md:mt-5 shadow-xl min-h-screen">
         {{ $content }}
     </div>
     <footer class="footer p-10 bg-neutral text-neutral-content">

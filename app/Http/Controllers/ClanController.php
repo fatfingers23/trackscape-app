@@ -139,4 +139,20 @@ class ClanController extends Controller
             ]);
     }
 
+    public function clanSearch()
+    {
+        $clans = Clan::orderBy('name')->paginate(10);
+        return view('clan.search', ['clans' => $clans]);
+    }
+
+    public function memberList($id)
+    {
+        $clan = Clan::find($id);
+        if ($clan) {
+            return view('clan.member-list-view', ['clan' => $clan]);
+        }
+        return response('', 404);
+
+    }
+
 }

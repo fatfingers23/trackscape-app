@@ -41,5 +41,9 @@ Route::get('/pb/{clanId}', [PbController::class, 'index'])->name('pb');
 
 
 Route::name('clan')->prefix('clan')->group(function () {
+    Route::get('/search', [ClanController::class, 'clanSearch'])->name('search');
+    Route::get('/{id}/members', [ClanController::class, 'memberList'])->name('members');
     Route::get('/{clanName}/{new?}', [ClanController::class, "landingPage"])->name('landing-page');
+
+
 });
