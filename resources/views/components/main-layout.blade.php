@@ -59,20 +59,21 @@
 @endenv
 <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
 @livewireScripts
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-01DLY6TM36"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
+@env('production')
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-01DLY6TM36"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
 
-    function gtag() {
-        dataLayer.push(arguments);
-    }
+        function gtag() {
+            dataLayer.push(arguments);
+        }
 
-    gtag('js', new Date());
+        gtag('js', new Date());
 
-    gtag('config', 'G-01DLY6TM36');
-</script>
-
+        gtag('config', 'G-01DLY6TM36');
+    </script>
+@endenv
 </body>
 
 </html>

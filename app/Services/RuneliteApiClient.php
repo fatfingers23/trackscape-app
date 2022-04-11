@@ -34,13 +34,12 @@ class RuneliteApiClient
     public function getUsersPb(string $rsn, string $boss)
     {
         $fullBoss = $this->bossLongName($boss);
-
         $url = $this->buildBasedUrl() . "/chat/pb?name=$rsn&boss=$fullBoss";
         $result = Http::get($url);
         if ($result->successful()) {
             return intval($result->body());
         }
-        return null;
+        return intval($result);
     }
 
     public function bossLongName(string $boss): string
