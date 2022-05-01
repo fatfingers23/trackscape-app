@@ -15,6 +15,7 @@
     "filament/tables": "^2.10",
     "fruitcake/laravel-cors": "^2.0",
     "guzzlehttp/guzzle": "^7.3",
+    "jefs42/libretranslate": "^1.0",
     "laravel/framework": "^9.0",
     "laravel/horizon": "^5.9",
     "laravel/sanctum": "^2.6",

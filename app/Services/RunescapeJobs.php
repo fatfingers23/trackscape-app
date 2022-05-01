@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Clan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class RunescapeJobs
 {
@@ -51,10 +52,10 @@ class RunescapeJobs
 
             }
             return md5($stringToHash);
-        } else {
-            ray($rsn->username);
-            ray($response->body());
         }
+        Log::error("User not found: $rsn->username");
+        Log::error("Url called:" . $this->hiscoreUrl . $rsn->username);
+        Log::error($response->status());
         return "";
     }
 
