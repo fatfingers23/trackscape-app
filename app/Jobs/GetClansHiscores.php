@@ -40,8 +40,10 @@ class GetClansHiscores implements ShouldQueue
      */
     public function handle()
     {
-        $jobService = new RunescapeJobs();
-        $jobService->setLastActiveForAClan($this->clan);
+        $members = $this->clan->members()->get();
+        foreach ($members as $member) {
+            CheckPlayersActivity::dispatch($member);
+        }
     }
 
 }

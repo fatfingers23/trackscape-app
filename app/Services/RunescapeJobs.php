@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ChatLog;
 use App\Models\Clan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -17,12 +18,18 @@ class RunescapeJobs
         //
         $members = $clan->members()->get();
         foreach ($members as $member) {
-            $newActivityHash = $this->hashHiscore($member);
-            if ($newActivityHash != "") {
-                if ($newActivityHash != $member->activity_hash) {
-                    $member->activity_hash = $newActivityHash;
-                    $member->last_active = Carbon::now();
-                    $member->save();
+            $lastChat = ChatLog::where('sender', $member->username)->latest('created_at')->first();
+
+            if ($lastChat && $lastChat->created_at > $member->last_active) {
+                $member->last_active = Carbon::now();
+            } else {
+                $newActivityHash = $this->hashHiscore($member);
+                if ($newActivityHash != "") {
+                    if ($newActivityHash != $member->activity_hash) {
+                        $member->activity_hash = $newActivityHash;
+                        $member->last_active = Carbon::now();
+                        $member->save();
+                    }
                 }
             }
         }
