@@ -42,23 +42,27 @@ class CheckPlayersActivity implements ShouldQueue
     public function handle()
     {
         //
-        if ($this->runescapeUser->last_active->isToday()) {
-            $lastChat = ChatLog::where('sender', $this->runescapeUser->username)->latest('created_at')->first();
+        if ($this->runescapeUser->last_active) {
+            if ($this->runescapeUser->last_active->isToday()) {
+                return;
+            }
+        }
+        $lastChat = ChatLog::where('sender', $this->runescapeUser->username)->latest('created_at')->first();
 
-            if ($lastChat && $lastChat->created_at > $this->runescapeUser->last_active) {
-                $this->runescapeUser->last_active = $lastChat->created_at->toDateString();
-                $this->runescapeUser->save();
-            } else {
-                $newActivityHash = $this->hashHiscore($this->runescapeUser);
-                if ($newActivityHash != "") {
-                    if ($newActivityHash != $this->runescapeUser->activity_hash) {
-                        $this->runescapeUser->activity_hash = $newActivityHash;
-                        $this->runescapeUser->last_active = Carbon::now();
-                        $this->runescapeUser->save();
-                    }
+        if ($lastChat && $lastChat->created_at > $this->runescapeUser->last_active) {
+            $this->runescapeUser->last_active = $lastChat->created_at->toDateString();
+            $this->runescapeUser->save();
+        } else {
+            $newActivityHash = $this->hashHiscore($this->runescapeUser);
+            if ($newActivityHash != "") {
+                if ($newActivityHash != $this->runescapeUser->activity_hash) {
+                    $this->runescapeUser->activity_hash = $newActivityHash;
+                    $this->runescapeUser->last_active = Carbon::now();
+                    $this->runescapeUser->save();
                 }
             }
         }
+
     }
 
 
