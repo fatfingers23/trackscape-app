@@ -11,12 +11,12 @@
     "php": "^8.1",
     "ext-simplexml": "*",
     "doctrine/dbal": "^3.3",
-    "filament/forms": "^2.10",
+    "filament/forms": "^v2.15.28",
     "filament/tables": "^2.10",
     "fruitcake/laravel-cors": "^2.0",
     "guzzlehttp/guzzle": "^7.3",
     "jefs42/libretranslate": "^1.0",
-    "laravel/framework": "^9.0",
+    "laravel/framework": "^9.19",
     "laravel/horizon": "^5.9",
     "laravel/sanctum": "^2.6",
     "laravel/scout": "^9.4",
@@ -54,6 +54,9 @@
     ],
     "post-create-project-cmd": [
       "@php artisan key:generate --ansi"
+    ],
+    "post-update-cmd": [
+      "@php artisan filament:upgrade"
     ]
   },
   "extra": {
