@@ -1,4 +1,4 @@
-require('./bootstrap');
+import './bootstrap';
 
 import Alpine from 'alpinejs'
 import FormsAlpinePlugin from '../../vendor/filament/forms/dist/module.esm'
