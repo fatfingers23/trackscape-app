@@ -48,7 +48,6 @@ class PersonalBestCommandJob implements ShouldQueue
         if ($runescapeUser) {
             $time = $this->apiClient->getUsersPb($this->chatLog->sender, $bossName);
             if ($time) {
-                ray($time);
                 $bossFullName = $this->apiClient->bossLongName($bossName);
                 $boss = Boss::firstOrCreate(['name' => $bossFullName]);
                 if ($boss) {
