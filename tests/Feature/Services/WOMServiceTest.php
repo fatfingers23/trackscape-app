@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Services;
+namespace Tests\Feature\Services;
 
 use App\Models\Clan;
 use App\Models\RunescapeUser;
