@@ -42,8 +42,16 @@ class PersonalBestJob implements ShouldQueue
 
         $timeSplit = explode(':', $this->matches[3]);
 
-        $killTime = intval($timeSplit[0]) * 60;
-        $killTime += intval($timeSplit[1]);
+        $killTime = 0;
+        if (count($timeSplit) == 3) {
+            $killTime += (intval($timeSplit[0]) * 60) * 60;
+            $killTime += intval($timeSplit[1]) * 60;
+            $killTime += intval($timeSplit[2]);
+        } else {
+            $killTime += intval($timeSplit[0]) * 60;
+            $killTime += intval($timeSplit[1]);
+        }
+
         $userName = $this->matches[1];
         $bossName = $this->matches[2];
         $runescapeUser = $this->clan->members()->where('username', $userName)->first();
@@ -62,4 +70,5 @@ class PersonalBestJob implements ShouldQueue
 
         }
     }
+
 }

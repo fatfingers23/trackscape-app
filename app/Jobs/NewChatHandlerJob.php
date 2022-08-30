@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\ChatLog;
 use App\Models\Clan;
+use App\Services\ChatLogPatterns;
 use App\Services\WebhookService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -48,14 +49,14 @@ class NewChatHandlerJob implements ShouldQueue
         }
 
         $collectionLogMatches = [];
-        $collectionLogMatch = preg_match('/(.*)received a new collection log item: [^0-9]*(.*)\)$/',
+        $collectionLogMatch = preg_match(ChatLogPatterns::$collectionLogPattern,
             $newChat->message, $collectionLogMatches);
         if ($collectionLogMatch == 1) {
             RecordCollectionLogJob::dispatch($this->webhookService, $this->clan, $collectionLogMatches);
         }
 
         $personalBestMatches = [];
-        $personalBestMatch = preg_match('/(.*) has achieved a new (.*) personal best: (.*)/',
+        $personalBestMatch = preg_match(ChatLogPatterns::$personalBestPattern,
             $newChat->message, $personalBestMatches);
         if ($personalBestMatch == 1) {
             PersonalBestJob::dispatch($this->clan, $personalBestMatches);
