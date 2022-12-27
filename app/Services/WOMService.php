@@ -4,12 +4,16 @@ namespace App\Services;
 
 use App\Jobs\GetClansHiscores;
 use App\Jobs\RemoveClanMates;
+use App\Models\BossPersonalBest;
 use App\Models\Clan;
+use App\Models\CollectionLog;
 use App\Models\Donation;
 use App\Models\RunescapeUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use mysql_xdevapi\Exception;
 
 class WOMService
 {
@@ -26,7 +30,14 @@ class WOMService
         return collect($response->json());
     }
 
-    public function checkForNameChange($username)
+    /**
+     *
+     * No longer in use. Leaving for now
+     * @param $username
+     * @param Clan $clan
+     * @return bool
+     */
+    public function checkForNameChange($username, Clan $clan)
     {
         $response = Http::get("$this->baseUrl/names?username=$username&status=2");
 
@@ -54,36 +65,42 @@ class WOMService
     }
 
 
+    /**
+     * Updates DB database with WOM group results
+     *
+     * @param $WOMGroupMembers
+     * @param $clan
+     * @return void
+     */
     public function updateClanMembersFromWOM($WOMGroupMembers, $clan)
     {
 
-
-        //TODO PROBABLY CHANGE THIS TO A SHARED LOGIC WITH ABOVE METHOD
-        $runescapeUsers = array();
         foreach ($WOMGroupMembers as $runescapeUser) {
-            $userInDb = RunescapeUser::where('username', '=', $runescapeUser['username'])->orWhere('wom_id', '=', $runescapeUser['id'])->first();
-
-            if ($userInDb) {
-                if ($userInDb->clan_id != $clan->id) {
-                    $userInDb->clan_id = $clan->id;
-                    $userInDb->admin = 0;
-                }
-                if ($userInDb->rank != $runescapeUser['role']) {
-                    $userInDb->rank = $runescapeUser['role'];
-                }
-                $userInDb->wom_id = $runescapeUser['id'];
-                $userInDb->save();
-                array_push($runescapeUsers, $userInDb);
-            } else {
-
-                $runescapeUser = RunescapeUser::create([
-                    'username' => $runescapeUser['username'],
-                    'rank' => $runescapeUser['role'],
-                    'wom_id' => $runescapeUser['id'],
-                    'clan_id' => $clan->id
-                ]);
-                array_push($runescapeUsers, $runescapeUser);
+            try {
+                RunescapeUser::updateOrCreate(
+                    [
+                        'wom_id' => $runescapeUser['id'],
+                    ],
+                    [
+                        'clan_id' => $clan->id,
+                        'rank' => $runescapeUser['role'],
+                        'username' => $runescapeUser['username'],
+                    ]
+                );
+            } catch (Exception $exception) {
+                Log::error("Error on updating " . $runescapeUser['username'] . " from wise oldman.");
+                throw $exception;
             }
+
+
+        }
+
+        $womIds = $WOMGroupMembers->pluck('id');
+        $noLongerInClan = RunescapeUser::whereNotIn('wom_id', $womIds)->get()->pluck('id');
+        if ($noLongerInClan) {
+            CollectionLog::whereIn('runescape_users_id', $noLongerInClan)->delete();
+            BossPersonalBest::whereIn('runescape_users_id', $noLongerInClan)->delete();
+            RunescapeUser::whereIn('id', $noLongerInClan)->delete();
         }
 
     }
@@ -100,10 +117,8 @@ class WOMService
         if ($WOMGroupMembers->count() != 0) {
             $this->updateClanMembersFromWOM($WOMGroupMembers, $clan);
         }
-        Bus::chain([
-            new RemoveClanMates($clan, $WOMGroupMembers, true),
-            new GetClansHiscores($clan),
-        ])->dispatch();
+        GetClansHiscores::dispatch($clan);
+
     }
 
 }

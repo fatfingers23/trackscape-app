@@ -37,11 +37,11 @@ class ChatLoggerController extends Controller
         }
 
         $requestedJson = $request->json();
-
         foreach ($requestedJson as $requestedChat) {
-            if ($requestedChat["chatType"] == "CLAN") {
+            if ($requestedChat["chatType"] == "CLAN" && strtolower($requestedChat["chatName"]) == strtolower($clan->name)) {
                 $stringToHash = $requestedChat["sender"] . $requestedChat['message'];
                 $messageHash = hash('crc32c', $stringToHash);
+//                ray($request);
                 if ($this->hashLoginMessage !== $messageHash) {
                     if (!Cache::has($messageHash)) {
                         Cache::put($messageHash, $requestedChat, $seconds = 10);
@@ -53,6 +53,6 @@ class ChatLoggerController extends Controller
 
         return response("");
     }
-    
+
 }
 

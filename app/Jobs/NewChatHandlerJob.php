@@ -37,13 +37,14 @@ class NewChatHandlerJob implements ShouldQueue
         $messageId = substr($this->chatLog["id"], 0, -3);
         $newChat = new ChatLog();
         $newChat->time_sent = Carbon::now('UTC');
-        $string = htmlentities($this->chatLog["sender"], null, 'utf-8');
+        $string = htmlentities($this->chatLog["sender"], ENT_HTML5, 'utf-8');
         $content = str_replace("&nbsp;", " ", $string);
         $cleanName = html_entity_decode($content);
         $newChat->sender = $cleanName;
         $newChat->message = $this->chatLog["message"];
         $newChat->clan_id = $this->clan->id;
         $newChat->chat_id = $messageId;
+
         if ($this->clan->save_chat_logs) {
             $newChat->save();
         }

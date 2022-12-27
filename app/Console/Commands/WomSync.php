@@ -54,12 +54,8 @@ class WomSync extends Command
         if ($WOMGroupMembers->count() != 0) {
             $womService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
         }
-        Bus::chain([
-            new RemoveClanMates($clan, $WOMGroupMembers, true),
-            new GetClansHiscores($clan),
-        ])->dispatch();
 
-
+        GetClansHiscores::dispatch($clan);
         return 0;
     }
 }
