@@ -14,6 +14,7 @@
 
 use App\Http\Controllers\ClanController;
 use App\Http\Controllers\PbController;
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,3 +48,6 @@ Route::name('clan')->prefix('clan')->group(function () {
 
 
 });
+
+Route::get('/test', [\App\Http\Controllers\TestEvent::class, 'test']);
+Route::post('/ws/auth', \App\Http\Controllers\WebSocketAuthController::class);

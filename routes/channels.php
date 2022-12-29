@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
+
+Broadcast::channel('clan-chat-channel.{clanName}', function ($user, $clanName) {
+    ray($user);
+    ray($clanName);
+    ray("test");
+    return true;
+});

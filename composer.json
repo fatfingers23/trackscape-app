@@ -10,6 +10,7 @@
   "require": {
     "php": "^8.1",
     "ext-simplexml": "*",
+    "beyondcode/laravel-websockets": "^1.13",
     "doctrine/dbal": "^3.3",
     "filament/forms": "^v2.15.28",
     "filament/tables": "^2.10",
@@ -21,6 +22,7 @@
     "laravel/sanctum": "^2.6",
     "laravel/scout": "^9.4",
     "laravel/tinker": "^2.5",
+    "pusher/pusher-php-server": "7.0.2",
     "spatie/laravel-ray": "^1.23"
   },
   "require-dev": {
@@ -31,6 +33,7 @@
     "mockery/mockery": "^1.4.2",
     "nunomaduro/collision": "^6.1",
     "phpunit/phpunit": "^9.3.3",
+    "spatie/laravel-horizon-watcher": "^1.0",
     "spatie/laravel-ignition": "^1.0"
   },
   "autoload": {
