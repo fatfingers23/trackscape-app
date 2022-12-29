@@ -77,16 +77,25 @@ class WOMService
 
         foreach ($WOMGroupMembers as $runescapeUser) {
             try {
-                RunescapeUser::updateOrCreate(
-                    [
-                        'wom_id' => $runescapeUser['id'],
-                    ],
-                    [
-                        'clan_id' => $clan->id,
-                        'rank' => $runescapeUser['role'],
-                        'username' => $runescapeUser['username'],
-                    ]
-                );
+
+                $userWithRsn = RunescapeUser::where('username', '=', $runescapeUser['username'])->first();
+                if ($userWithRsn) {
+                    $userWithRsn->wom_id = $runescapeUser['id'];
+                    $userWithRsn->rank = $runescapeUser['role'];
+                    $userWithRsn->save();
+                } else {
+                    RunescapeUser::updateOrCreate(
+                        [
+                            'wom_id' => $runescapeUser['id'],
+                        ],
+                        [
+                            'clan_id' => $clan->id,
+                            'rank' => $runescapeUser['role'],
+                            'username' => $runescapeUser['username'],
+                        ]
+                    );
+                }
+
             } catch (Exception $exception) {
                 Log::error("Error on updating " . $runescapeUser['username'] . " from wise oldman.");
                 throw $exception;
