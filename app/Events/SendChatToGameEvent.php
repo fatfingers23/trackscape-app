@@ -24,10 +24,11 @@ class SendChatToGameEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(clanName)
+    public function __construct($clanName)
     {
         ray("test");
         //
+        $this->clanName = $clanName;
     }
 
     /**
