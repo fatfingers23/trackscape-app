@@ -14,9 +14,9 @@ class SendChatToGameEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    protected $rsn;
-    protected $clanName;
-    protected $message;
+    public $sender;
+    public $clanName;
+    public $message;
 
 
     /**
@@ -24,11 +24,12 @@ class SendChatToGameEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($clanName)
+    public function __construct($clanName, $sender, $message)
     {
-        ray("test");
         //
         $this->clanName = $clanName;
+        $this->sender = $sender;
+        $this->message = $message;
     }
 
     /**
@@ -38,7 +39,16 @@ class SendChatToGameEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        ray("test");
         return new PrivateChannel('clan-chat-channel.' . $this->clanName);
     }
+
+    /**
+     * The event's broadcast name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'external.chat';
+    }    //
 }

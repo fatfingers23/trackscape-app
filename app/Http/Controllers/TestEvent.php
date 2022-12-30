@@ -27,10 +27,11 @@ class TestEvent extends Controller
     public function test (){
 
 
-        SendChatToGameEvent::dispatch();
+        SendChatToGameEvent::dispatch("Insomniacs");
 
         return response()->json([]);
     }
-    //
+
+
 
 }

@@ -22,17 +22,22 @@ class ChatAuth
         if($osrsId == null){
             abort(401);
         }
-
-        $user = User::where('osrs_id', '=', $osrsId)->first();
-        if($user == null){
-            $user = User::create([
-                'name' => $osrsId,
-                'email' => $osrsId,
-                'password' => 'JumbleMess',
-                'osrs_id' => $osrsId
-            ]);
+//        ray(\Auth::authenticate());
+        if(!\Auth::check()){
+//            ray("logging in");
+            $user = User::where('osrs_id', '=', $osrsId)->first();
+            if($user == null){
+                $user = User::create([
+                    'name' => $osrsId,
+                    'email' => $osrsId,
+                    'password' => 'JumbleMess',
+                    'osrs_id' => $osrsId
+                ]);
+            }
+            \Auth::login($user);
         }
-        \Auth::login($user);
         return $next($request);
+
+
     }
 }

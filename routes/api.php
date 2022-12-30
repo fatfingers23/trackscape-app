@@ -45,3 +45,7 @@ Route::prefix('donations')->middleware(['auth:sanctum', 'runescapeAuth'])->group
 Route::prefix('player')->middleware(['auth:sanctum', 'runescapeAuth'])->group(function () {
     Route::get('inactive/{days}', [PlayerController::class, "getInactive"]);
 });
+
+Route::prefix('chat')->group(function (){
+    Route::middleware(['wsAuth'])->post('osrs', [\App\Http\Controllers\ChatController::class, 'osrsChat']);
+});
