@@ -49,7 +49,7 @@ class CheckPlayersActivity implements ShouldQueue
         }
         $lastChat = ChatLog::where('sender', $this->runescapeUser->username)->latest('created_at')->first();
 
-        if ($lastChat && $lastChat->created_at > $this->runescapeUser->last_active) {
+        if ($lastChat && $lastChat->created_at->startOfDay() > $this->runescapeUser->last_active) {
             $this->runescapeUser->last_active = $lastChat->created_at->toDateString();
             $this->runescapeUser->save();
         } else {
