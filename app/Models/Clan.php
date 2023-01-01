@@ -73,4 +73,9 @@ class Clan extends Model
         return $array;
     }
 
+    public function hasWOMId()
+    {
+        return $this->wom_id != null;
+    }
+
 }

@@ -34,6 +34,8 @@ class ChatLog extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     protected $casts = [
         'time_sent' => 'datetime:d/m H:i:s',
     ];

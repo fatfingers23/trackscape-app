@@ -49,19 +49,13 @@ class NewChatHandlerJob implements ShouldQueue
             $newChat->save();
         }
 
-        $collectionLogMatches = [];
-        $collectionLogMatch = preg_match(ChatLogPatterns::$collectionLogPattern,
-            $newChat->message, $collectionLogMatches);
-        if ($collectionLogMatch == 1) {
-            RecordCollectionLogJob::dispatch($this->webhookService, $this->clan, $collectionLogMatches);
-        }
+        $messageArray = [
+            'message' => $this->chatLog["message"],
+            'sender' => $this->chatLog["sender"]
+        ];
+        RecordCollectionLogJob::dispatch($this->clan, $messageArray);
+        PersonalBestJob::dispatch($this->clan, $messageArray);
 
-        $personalBestMatches = [];
-        $personalBestMatch = preg_match(ChatLogPatterns::$personalBestPattern,
-            $newChat->message, $personalBestMatches);
-        if ($personalBestMatch == 1) {
-            PersonalBestJob::dispatch($this->clan, $personalBestMatches);
-        }
         $lowerCaseMessage = strtolower($newChat->message);
         if (str_starts_with($lowerCaseMessage, '!pb')) {
             PersonalBestCommandJob::dispatch($newChat)->delay(3);

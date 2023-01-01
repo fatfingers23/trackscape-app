@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\ChatLog;
 use App\Models\Clan;
 use App\Models\CollectionLog;
+use App\Services\ChatLogPatterns;
 use App\Services\WebhookService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,21 +18,25 @@ class RecordCollectionLogJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Clan $clan;
-    private WebhookService $webhookService;
-    private array $matches;
+    private array $message;
 
-    public function __construct(WebhookService $webhookService, Clan $clan, array $matches)
+    public function __construct(Clan $clan, array $message)
     {
         $this->clan = $clan;
-        $this->webhookService = $webhookService;
-        $this->matches = $matches;
+        $this->message = $message;
     }
 
     public function handle()
     {
         //
-        $rsnMatch = $this->matches[1];
-        $split = explode('/', $this->matches[2]);
+        $collectionLogMatches = [];
+        $collectionLogMatch = preg_match(ChatLogPatterns::$collectionLogPattern,
+            $this->message['message'], $collectionLogMatches);
+        if ($collectionLogMatch != 1) {
+            return;
+        }
+        $rsnMatch = $collectionLogMatches[1];
+        $split = explode('/', $collectionLogMatches[2]);
         $runescapeUser = $this->clan->members()->where('username', $rsnMatch)->first();
         if ($runescapeUser) {
             CollectionLog::updateOrCreate(

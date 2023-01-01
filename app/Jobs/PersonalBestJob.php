@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Boss;
 use App\Models\BossPersonalBest;
 use App\Models\Clan;
+use App\Services\ChatLogPatterns;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,18 +18,18 @@ class PersonalBestJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Clan $clan;
-    private array $matches;
+    private array $message;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Clan $clan, array $matches)
+    public function __construct(Clan $clan, array $message)
     {
         //
         $this->clan = $clan;
-        $this->matches = $matches;
+        $this->message = $message;
     }
 
     /**
@@ -40,7 +41,15 @@ class PersonalBestJob implements ShouldQueue
     {
         //
 
-        $timeSplit = explode(':', $this->matches[3]);
+        $personalBestMatches = [];
+        $personalBestMatch = preg_match(ChatLogPatterns::$personalBestPattern,
+            $this->message['message'], $personalBestMatches);
+        if ($personalBestMatch != 1) {
+            return;
+        }
+
+
+        $timeSplit = explode(':', $personalBestMatches[3]);
 
         $killTime = 0;
         if (count($timeSplit) == 3) {
@@ -52,8 +61,8 @@ class PersonalBestJob implements ShouldQueue
             $killTime += intval($timeSplit[1]);
         }
 
-        $userName = $this->matches[1];
-        $bossName = $this->matches[2];
+        $userName = $personalBestMatches[1];
+        $bossName = $personalBestMatches[2];
         $runescapeUser = $this->clan->members()->where('username', $userName)->first();
 
         if ($runescapeUser) {

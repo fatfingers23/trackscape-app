@@ -10,7 +10,10 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendChatToGameEvent implements ShouldBroadcast
+/**
+ * Takes chat from the Runeltie plugin and posts to discord, or w/e else
+ */
+class SendChatToBot implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -49,6 +52,6 @@ class SendChatToGameEvent implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'external.chat';
+        return 'game.chat';
     }    //
 }

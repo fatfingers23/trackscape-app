@@ -18,7 +18,7 @@ class PersonalBestCommandJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private ChatLog $chatLog;
+    private array $message;
     private RuneliteApiClient $apiClient;
 
 
@@ -27,10 +27,10 @@ class PersonalBestCommandJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(ChatLog $chatLog)
+    public function __construct(array $message)
     {
         //
-        $this->chatLog = $chatLog;
+        $this->message = $message;
         $this->apiClient = new RuneliteApiClient();
     }
 
@@ -42,18 +42,18 @@ class PersonalBestCommandJob implements ShouldQueue
     public function handle()
     {
         //
-        $lowerCashMessage = strtolower($this->chatLog->message);
+        $lowerCashMessage = strtolower($this->message['message']);
         $bossName = trim(explode('!pb', $lowerCashMessage)[1]);
-        $runescapeUser = RunescapeUser::where('username', $this->chatLog->sender)->where('clan_id', $this->chatLog->clan_id)->first();
+        $runescapeUser = RunescapeUser::where('username', $this->message['sender'])->first();
         if ($runescapeUser) {
-            $time = $this->apiClient->getUsersPb($this->chatLog->sender, $bossName);
+            $time = $this->apiClient->getUsersPb($this->message['sender'], $bossName);
             if ($time) {
                 $bossFullName = $this->apiClient->bossLongName($bossName);
                 $boss = Boss::firstOrCreate(['name' => $bossFullName]);
                 if ($boss) {
                     BossPersonalBest::updateOrCreate([
                         'runescape_users_id' => $runescapeUser->id,
-                        'clan_id' => $this->chatLog->clan_id,
+                        'clan_id' => $runescapeUser->clan_id,
                         'bosses_id' => $boss->id
                     ], ['kill_time' => $time]);
                 }
