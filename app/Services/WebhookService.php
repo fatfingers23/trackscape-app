@@ -19,8 +19,7 @@ class WebhookService
 
         $rankLink = "";
         if($rank){
-            $upperCaseRank = ucfirst($rank);
-            $rankLink = "https://wiseoldman.net/img/runescape/roles/$upperCaseRank.png";
+            $rankLink = $this->getRankIcon($rank);
         }
         else if($clan->name == $chatLog->sender){
             $rankLink = "https://oldschool.runescape.wiki/images/Your_Clan_icon.png";
@@ -50,4 +49,18 @@ class WebhookService
         Http::post($webHookUrl, $body);
     }
 
+    private function getRankIcon(string $rank){
+        $wikiPrefix = "https://oldschool.runescape.wiki/images/Clan_icon_-_";
+        if ($rank == trim($rank) && str_contains($rank, ' ')) {
+            $rankSplit = explode(" ", $rank);
+            $newRank = "";
+            foreach ($rankSplit as $split){
+                $newRank .= ucfirst($split) . "_";
+            }
+            $rankIconName = substr($newRank, 0, -1);
+            return $wikiPrefix . $rankIconName . ".png";
+        }
+        $upperCaseRank = ucfirst($rank);
+        return $wikiPrefix . $upperCaseRank . ".png";
+    }
 }

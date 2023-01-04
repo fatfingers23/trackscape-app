@@ -46,7 +46,7 @@ class NewChatHandlerJob implements ShouldQueue
         $newChat->chat_id = $messageId;
 
         if ($this->clan->save_chat_logs) {
-//            $newChat->save();
+            $newChat->save();
         }
 
         $collectionLogMatches = [];
@@ -66,7 +66,7 @@ class NewChatHandlerJob implements ShouldQueue
         if (str_starts_with($lowerCaseMessage, '!pb')) {
             PersonalBestCommandJob::dispatch($newChat)->delay(3);
         }
-        $rankOfUser = $this->clan->members()->where('username', $newChat->sender)->first()?->rank;
+        $rankOfUser = $this->clan->members()->where('username', $newChat->sender)?->first()?->rank;
 
         $this->webhookService->sendSimpleMessage($this->clan, $newChat, $rankOfUser);
     }
