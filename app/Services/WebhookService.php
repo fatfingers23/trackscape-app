@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 class WebhookService
 {
 
-    public function sendSimpleMessage(Clan $clan, ChatLog $chatLog)
+    public function sendSimpleMessage(Clan $clan, array $chat, string $rank = null)
     {
         $webHookUrl = $clan->discord_webhook;
         if ($webHookUrl == null) {
@@ -18,15 +18,23 @@ class WebhookService
 
         $body = [
             "username" => $clan->name,
+            //Can you translate the bottom from json to a php array?
             "embeds" => [
                 [
+                    "title" => "",
+                    "description" => $chat['message'],
+                    "color" => 0x00FFFF,
                     "author" => [
-                        "name" => $chatLog->sender
-                    ],
-                    "description" => $chatLog->message
+                        "name" => $chat['sender']
+                    ]
                 ]
             ]
         ];
+        if($rank){
+            $upperCaseRank = ucfirst($rank);
+            $body['embeds'][0]['author']['icon_url'] = "https://wiseoldman.net/img/runescape/roles/$upperCaseRank.png";
+        }
+
         Http::post($webHookUrl, $body);
     }
 
