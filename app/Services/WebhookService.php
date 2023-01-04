@@ -30,7 +30,6 @@ class WebhookService
 
         $body = [
             "username" => $clan->name,
-            //Can you translate the bottom from json to a php array?
             "embeds" => [
                 [
                     "title" => "",
