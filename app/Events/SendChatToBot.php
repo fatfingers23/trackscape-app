@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Clan;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,9 +18,8 @@ class SendChatToBot implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $sender;
-    public $clanName;
-    public $message;
+    public $chat;
+    public Clan $clan;
 
 
     /**
@@ -27,12 +27,11 @@ class SendChatToBot implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($clanName, $sender, $message)
+    public function __construct(Clan $clan, $chat)
     {
-        //
-        $this->clanName = $clanName;
-        $this->sender = $sender;
-        $this->message = $message;
+
+        $this->chat = $chat;
+        $this->clan = $clan;
     }
 
     /**
@@ -42,7 +41,7 @@ class SendChatToBot implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('clan-chat-channel.' . $this->clanName);
+        return new Channel('in-game-chat');
     }
 
     /**

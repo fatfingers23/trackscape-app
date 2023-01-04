@@ -53,7 +53,7 @@ class NewChatHandlerJob implements ShouldQueue
             'message' => $this->chatLog["message"],
             'sender' => $this->chatLog["sender"]
         ];
-        RecordCollectionLogJob::dispatch($this->clan, $messageArray);
+//        RecordCollectionLogJob::dispatch($this->clan, $messageArray);
         PersonalBestJob::dispatch($this->clan, $messageArray);
 
         $lowerCaseMessage = strtolower($newChat->message);

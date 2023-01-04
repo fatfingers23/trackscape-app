@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Events\SendChatToBot;
 use App\Models\ChatLog;
 use App\Models\Clan;
+use App\Services\WebhookService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,6 +23,7 @@ class NewGameChatJob implements ShouldQueue
 
     private Clan $clan;
     private array $chat;
+    private WebhookService $webhookService;
 
     /**
      * Create a new job instance.
@@ -32,6 +35,7 @@ class NewGameChatJob implements ShouldQueue
         //
         $this->clan = $clan;
         $this->chat = $chat;
+        $this->webhookService = new WebhookService();
     }
 
     /**
@@ -46,12 +50,17 @@ class NewGameChatJob implements ShouldQueue
             RecordCollectionLogJob::dispatch($this->clan, $this->chat);
             PersonalBestJob::dispatch($this->clan, $this->chat);
         }
+        $rankOfUser = null;
         if($this->clan->save_chat_logs){
             ChatLog::create([
                 'clan_id' => $this->clan->id,
                 'message' => $this->chat['message'],
                 'sender' => $this->chat['sender'],
             ]);
+            $rankOfUser = $this->clan->members()->where('username', $this->chat['sender'])->first()?->rank;
         }
+//        broadcast(new SendChatToBot($this->clan, $this->chat));
+
+        $this->webhookService->sendSimpleMessage($this->clan, $this->chat, $rankOfUser);
     }
 }
