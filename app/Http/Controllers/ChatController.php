@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendChatToGame;
+use App\Http\Requests\DiscordChatRequest;
 use App\Http\Requests\OSRSChatRequest;
 use App\Jobs\NewChatHandlerJob;
 use App\Jobs\NewGameChatJob;
 use App\Models\Clan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,7 +23,11 @@ class ChatController extends Controller
     public function osrsChat(OSRSChatRequest $request){
         $request->validated();
         $requestData = $request->all();
-        $clan = Clan::where('name', '=', $requestData[0]['clanName'])->first();
+        $clanName = $requestData[0]['clanName'];
+        $clan = Cache::remember('clan:name:' . $clanName, Carbon::now()->addHour(), function () use ($clanName,) {
+            return Clan::where('name', '=', $clanName)->first();
+        });
+
         if($clan == null){
             return response()->json([]);
         }
@@ -32,10 +39,20 @@ class ChatController extends Controller
                 Cache::put($messageHash, $message, $seconds = 10);
                 NewGameChatJob::dispatch($clan, $message);
             }
-//                broadcast(new SendChatToGameEvent($message['clanName'], $message['sender'], $message['message']))->toOthers();
         }
+        return response()->json([]);
+    }
 
-
+    public function discordChat(DiscordChatRequest $request){
+        $request->validated();
+        $requestData = $request->all();
+        $clan = Cache::remember('clan:discordId:' . $requestData['discord_server'], Carbon::now()->addHour(), function () use ($requestData, $discordId) {
+            return Clan::where('discord_server_id', '=', $requestData['discord_server'])->first();
+        });
+        if($clan == null){
+            return response()->json([]);
+        }
+        broadcast(new SendChatToGame($clan->name, $requestData['sender'], $requestData['message']));
         return response()->json([]);
     }
 }

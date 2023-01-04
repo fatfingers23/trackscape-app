@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BotController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\PlayerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +35,10 @@ Route::prefix('clan')->group(function () {
 
 });
 
+Route::prefix('bot')->middleware(['auth:sanctum'])->group(function (){
+    Route::get('clan/{discordId}', [BotController::class, "getClan"]);
+});
+
 
 Route::prefix('donations')->middleware(['auth:sanctum', 'runescapeAuth'])->group(function () {
     Route::post('add/donation', [\App\Http\Controllers\DonationsController::class, "addDonation_post"]);
@@ -47,5 +53,6 @@ Route::prefix('player')->middleware(['auth:sanctum', 'runescapeAuth'])->group(fu
 });
 
 Route::prefix('chat')->group(function (){
-    Route::middleware(['wsAuth'])->post('osrs', [\App\Http\Controllers\ChatController::class, 'osrsChat']);
+    Route::middleware(['wsAuth'])->post('osrs', [ChatController::class, 'osrsChat']);
+    Route::middleware(['auth:sanctum'])->post('discord', [ChatController::class, 'discordChat']);
 });

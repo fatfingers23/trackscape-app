@@ -58,9 +58,9 @@ class NewChatHandlerJob implements ShouldQueue
 
         $lowerCaseMessage = strtolower($newChat->message);
         if (str_starts_with($lowerCaseMessage, '!pb')) {
-            PersonalBestCommandJob::dispatch($newChat)->delay(3);
+            PersonalBestCommandJob::dispatch($this->chatLog)->delay(3);
         }
 
-        $this->webhookService->sendSimpleMessage($this->clan, $newChat);
+        $this->webhookService->sendSimpleMessage($this->clan, $this->chatLog);
     }
 }

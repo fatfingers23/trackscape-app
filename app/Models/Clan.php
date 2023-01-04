@@ -78,4 +78,5 @@ class Clan extends Model
         return $this->wom_id != null;
     }
 
+    protected $hidden = ['confirmation_code'];
 }
