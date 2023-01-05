@@ -37,6 +37,7 @@ Route::prefix('clan')->group(function () {
 
 Route::prefix('bot')->middleware(['auth:sanctum'])->group(function (){
     Route::get('clan/{discordId}', [BotController::class, "getClan"]);
+    Route::get('clans', [BotController::class, "getAllClans"]);
 });
 
 

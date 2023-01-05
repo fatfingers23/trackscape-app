@@ -37,6 +37,8 @@ use Laravel\Scout\Searchable;
  * @method static \Illuminate\Database\Eloquent\Builder|Clan whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Clan whereWomId($value)
  * @mixin \Eloquent
+ * @property string|null $discord_message_channel
+ * @method static \Illuminate\Database\Eloquent\Builder|Clan whereDiscordMessageChannel($value)
  */
 class Clan extends Model
 {
@@ -78,5 +80,9 @@ class Clan extends Model
         return $this->wom_id != null;
     }
 
-    protected $hidden = ['confirmation_code'];
+    public function discordIsSetUp(){
+        return $this->discord_server_id != null && $this->discord_webhook != null && $this->discord_message_channel != null;
+    }
+
+    protected $hidden = ['confirmation_code', 'created_at', 'updated_at'];
 }

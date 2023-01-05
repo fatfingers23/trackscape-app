@@ -46,7 +46,7 @@ class ChatController extends Controller
     public function discordChat(DiscordChatRequest $request){
         $request->validated();
         $requestData = $request->all();
-        $clan = Cache::remember('clan:discordId:' . $requestData['discord_server'], Carbon::now()->addHour(), function () use ($requestData, $discordId) {
+        $clan = Cache::remember('clan:discordId:' . $requestData['discord_server'], Carbon::now()->addHour(), function () use ($requestData) {
             return Clan::where('discord_server_id', '=', $requestData['discord_server'])->first();
         });
         if($clan == null){

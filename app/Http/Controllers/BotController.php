@@ -17,4 +17,10 @@ class BotController extends Controller
         return response()->json($clan);
     }
 
+    public function getAllClans(){
+        $clans = Cache::remember('clans', Carbon::now()->addHour(), function () {
+            return Clan::where('discord_server_id', '!=', null)->where('discord_message_channel', '!=', null)->get();
+        });
+        return response()->json($clans);
+    }
 }
