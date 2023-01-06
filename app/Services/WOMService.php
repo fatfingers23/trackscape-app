@@ -17,17 +17,17 @@ use mysql_xdevapi\Exception;
 
 class WOMService
 {
-    protected $baseUrl = "https://api.wiseoldman.net";
+    protected $baseUrl = "https://api.wiseoldman.net/v2";
 
     public function getGroupPlayers($groupId)
     {
-        $response = Http::get("$this->baseUrl/groups/$groupId/members");
+        $response = Http::get("$this->baseUrl/groups/$groupId");
 
         if (!$response->successful()) {
             return collect();
         }
 
-        return collect($response->json());
+        return collect($response->json()['memberships']);
     }
 
     /**
@@ -77,27 +77,27 @@ class WOMService
 
         foreach ($WOMGroupMembers as $runescapeUser) {
             try {
-
-                $userWithRsn = RunescapeUser::where('username', '=', $runescapeUser['username'])->first();
+                $username = $runescapeUser['player']['username'];
+                $userWithRsn = RunescapeUser::where('username', '=', $username)->first();
                 if ($userWithRsn) {
-                    $userWithRsn->wom_id = $runescapeUser['id'];
+                    $userWithRsn->wom_id = $runescapeUser['playerId'];
                     $userWithRsn->rank = $runescapeUser['role'];
                     $userWithRsn->save();
                 } else {
                     RunescapeUser::updateOrCreate(
                         [
-                            'wom_id' => $runescapeUser['id'],
+                            'wom_id' => $runescapeUser['playerId'],
                         ],
                         [
                             'clan_id' => $clan->id,
                             'rank' => $runescapeUser['role'],
-                            'username' => $runescapeUser['username'],
+                            'username' => $username,
                         ]
                     );
                 }
 
             } catch (Exception $exception) {
-                Log::error("Error on updating " . $runescapeUser['username'] . " from wise oldman.");
+                Log::error("Error on updating " . $username . " from wise oldman.");
                 throw $exception;
             }
 

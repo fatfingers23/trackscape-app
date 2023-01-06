@@ -54,7 +54,9 @@ class WomSync extends Command
         if ($WOMGroupMembers->count() != 0) {
             $womService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
         }
-
+        else{
+            \Log::error("There did not appear to be any WOM results for the clan $clan->name");
+        }
         GetClansHiscores::dispatch($clan);
         return 0;
     }
