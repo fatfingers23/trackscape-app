@@ -26,7 +26,7 @@ class DropLogController extends Controller
             ->get();
         $csvString = "RSN,Item Name,Quantity,Price,Date" . PHP_EOL;
         foreach ($dropLogs as $dropLog) {
-            $csvString .= $dropLog->rsn . "," . $dropLog->item_name . "," . $dropLog->quantity . "," . $dropLog->price . "," . $dropLog->created_at . "\n";
+            $csvString .= $dropLog->rsn . "," . $dropLog->item_name . "," . $dropLog->quantity . "," . $dropLog->price . "," . $dropLog->created_at->format('m/d/Y H:i') . "\n";
         }
         return response($csvString);
 //            ->header('Content-Type', 'text/csv')
