@@ -19,11 +19,9 @@ class DropLogController extends Controller
 
         $startDate = Carbon::parse($startDate)->startOfDay();
         $endDate = Carbon::parse($endDate)->endOfDay();
-        ray($startDate);
-        ray($endDate);
+
         $dropLogs = DropLog::where('clan_id', '=', $clan->id)
-            ->where('created_at', '>=', $startDate)
-            ->orWhere('created_at', '<=', $endDate)
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'desc')
             ->get();
         $csvString = "RSN,Item Name,Quantity,Price,Date" . PHP_EOL;
