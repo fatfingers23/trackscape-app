@@ -69,7 +69,7 @@ class NewChatHandlerJob implements ShouldQueue
         }
         $rankOfUser = $this->clan->members()->where('username', $newChat->sender)?->first()?->rank;
 
-        $this->webhookService->sendSimpleMessage($this->clan, $newChat, $rankOfUser);
+        $this->webhookService->sendSimpleMessage($this->clan, $newChat, $cleanName, $rankOfUser);
 
         DropLogParser::dispatch($this->clan, $newChat->message);
     }
