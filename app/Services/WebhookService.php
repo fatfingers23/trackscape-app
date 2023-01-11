@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 class WebhookService
 {
 
-    public function sendSimpleMessage(Clan $clan, ChatLog $chatLog, string $rank = null)
+    public function sendSimpleMessage(Clan $clan, ChatLog $chatLog, string $cleanName, string $rank = null)
     {
         $webHookUrl = $clan->discord_webhook;
         if ($webHookUrl == null) {
@@ -18,13 +18,11 @@ class WebhookService
         }
 
         $rankLink = "";
-        if($rank){
+        if ($rank) {
             $rankLink = $this->getRankIcon($rank);
-        }
-        else if($clan->name == $chatLog->sender){
+        } else if ($clan->name == $chatLog->sender) {
             $rankLink = "https://oldschool.runescape.wiki/images/Your_Clan_icon.png";
-        }
-        else{
+        } else {
             $rankLink = "https://oldschool.runescape.wiki/images/Clan_icon_-_Guest.png";
         }
 
@@ -37,7 +35,7 @@ class WebhookService
                     "color" => 0x00FFFF,
                     "timestamp" => Carbon::now('UTC')->toIso8601String(),
                     "author" => [
-                        "name" => $chatLog->sender,
+                        "name" => $cleanName,
                         'icon_url' => $rankLink
                     ]
                 ]
@@ -48,12 +46,13 @@ class WebhookService
         Http::post($webHookUrl, $body);
     }
 
-    private function getRankIcon(string $rank){
+    private function getRankIcon(string $rank)
+    {
         $wikiPrefix = "https://oldschool.runescape.wiki/images/Clan_icon_-_";
         if ($rank == trim($rank) && str_contains($rank, ' ')) {
             $rankSplit = explode(" ", $rank);
             $newRank = "";
-            foreach ($rankSplit as $split){
+            foreach ($rankSplit as $split) {
                 $newRank .= ucfirst($split) . "_";
             }
             $rankIconName = substr($newRank, 0, -1);

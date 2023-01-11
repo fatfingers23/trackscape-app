@@ -49,6 +49,7 @@ class NewChatHandlerJob implements ShouldQueue
             $newChat->save();
         }
 
+
         $collectionLogMatches = [];
         $collectionLogMatch = preg_match(ChatLogPatterns::$collectionLogPattern,
             $newChat->message, $collectionLogMatches);
@@ -69,5 +70,7 @@ class NewChatHandlerJob implements ShouldQueue
         $rankOfUser = $this->clan->members()->where('username', $newChat->sender)?->first()?->rank;
 
         $this->webhookService->sendSimpleMessage($this->clan, $newChat, $rankOfUser);
+
+        DropLogParser::dispatch($this->clan, $newChat->message);
     }
 }

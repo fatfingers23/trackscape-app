@@ -13,6 +13,8 @@
 */
 
 use App\Http\Controllers\ClanController;
+use App\Http\Controllers\DropLogController;
+use App\Http\Controllers\DropLogsController;
 use App\Http\Controllers\PbController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +46,6 @@ Route::name('clan')->prefix('clan')->group(function () {
     Route::get('/search', [ClanController::class, 'clanSearch'])->name('search');
     Route::get('/{id}/members', [ClanController::class, 'memberList'])->name('members');
     Route::get('/{clanName}/{new?}', [ClanController::class, "landingPage"])->name('landing-page');
-
-
 });
+
+Route::get('/droplogs/{confirmationCode}/{startDate}/{endDate}', [DropLogController::class, 'csvOfDropLog'])->name('drop-logs');
