@@ -4,6 +4,39 @@ namespace Tests\DataMocks;
 
 class ChatLogMessages
 {
+    public static function dropLogTestData()
+    {
+        return [
+            [
+                [
+                    'rsn' => 'RSName',
+                    'item_name' => 'Adamant full helm (t)',
+                    'price' => 375,
+                    'quantity' => 1
+                ],
+                'RSName received a drop: Adamant full helm (t) (375 coins).'
+            ],
+            [
+                [
+                    'rsn' => 'RS Name',
+                    'item_name' => 'Snapdragon seed',
+                    'price' => '360,736',
+                    'quantity' => 8
+                ],
+                'RS Name received a drop: 8 x Snapdragon seed (360,736 coins).'
+            ],
+            [
+                [
+                    'rsn' => 'RS Name',
+                    'item_name' => 'Abyssal whip',
+                    'price' => '1,379,048',
+                    'quantity' => 1
+                ],
+                'RS Name received a drop: Abyssal whip (1,379,048 coins).'
+            ]
+        ];
+
+    }
 
     public static function personalBestTestData()
     {

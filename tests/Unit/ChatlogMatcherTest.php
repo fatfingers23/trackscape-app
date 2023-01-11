@@ -73,8 +73,38 @@ class ChatlogMatcherTest extends TestCase
         });
     }
 
+    /**
+     * @param $expected
+     * @param $message
+     * @return void
+     * @dataProvider dropLogTestData
+     */
+    public function test_dropLogPattern($expected, $message)
+    {
+        $matches = [];
+        //Below works
+
+        $result = preg_match(ChatLogPatterns::$dropLogPattern, $message, $matches);
+        $this->assertEquals(1, $result);
+//        ray($matches);
+        $this->assertEquals($expected['rsn'], $matches[1]);
+        $this->assertEquals($expected['item_name'], $matches[4]);
+        if ($expected['quantity'] > 1) {
+            $this->assertEquals($expected['quantity'], $matches[2]);
+        }
+        $this->assertEquals($expected['price'], $matches[5]);
+
+    }
+
+
     public function personalBestTestData()
     {
         return ChatLogMessages::personalBestTestData();
     }
+
+    public function dropLogTestData()
+    {
+        return ChatLogMessages::dropLogTestData();
+    }
+
 }
