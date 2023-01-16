@@ -22,7 +22,6 @@ class WOMService
     public function getGroupPlayers($groupId)
     {
         $response = Http::get("$this->baseUrl/groups/$groupId");
-
         if (!$response->successful()) {
             return collect();
         }
@@ -104,7 +103,7 @@ class WOMService
 
         }
 
-        $womIds = $WOMGroupMembers->pluck('id');
+        $womIds = $WOMGroupMembers->pluck('playerId');
         $noLongerInClan = RunescapeUser::whereNotIn('wom_id', $womIds)->get()->pluck('id');
         if ($noLongerInClan) {
             CollectionLog::whereIn('runescape_users_id', $noLongerInClan)->delete();

@@ -8,6 +8,7 @@ use App\Models\Clan;
 use App\Services\WOMService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Log;
 
 class WomSync extends Command
 {
@@ -53,8 +54,7 @@ class WomSync extends Command
         $WOMGroupMembers = $womService->getGroupPlayers($clan->wom_id);
         if ($WOMGroupMembers->count() != 0) {
             $womService->updateClanMembersFromWOM($WOMGroupMembers, $clan);
-        }
-        else{
+        } else {
             \Log::error("There did not appear to be any WOM results for the clan $clan->name");
         }
         GetClansHiscores::dispatch($clan);
