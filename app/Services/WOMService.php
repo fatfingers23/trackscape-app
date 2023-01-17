@@ -77,13 +77,15 @@ class WOMService
         foreach ($WOMGroupMembers as $runescapeUser) {
             try {
                 $username = $runescapeUser['player']['username'];
-                $userWithRsn = RunescapeUser::where('username', '=', $username)->first();
+                $userWithRsn = RunescapeUser::
+                where('clan_id', '=', $clan->id)
+                    ->where('username', '=', $username)->first();
                 if ($userWithRsn) {
                     $userWithRsn->wom_id = $runescapeUser['playerId'];
                     $userWithRsn->rank = $runescapeUser['role'];
                     $userWithRsn->save();
                 } else {
-                    RunescapeUser::updateOrCreate(
+                    RunescapeUser::where('clan_id', '=', $clan->id)->updateOrCreate(
                         [
                             'wom_id' => $runescapeUser['playerId'],
                         ],
@@ -104,11 +106,11 @@ class WOMService
         }
 
         $womIds = $WOMGroupMembers->pluck('playerId');
-        $noLongerInClan = RunescapeUser::whereNotIn('wom_id', $womIds)->get()->pluck('id');
+        $noLongerInClan = RunescapeUser::where('clan_id', '=', $clan->id)->whereNotIn('wom_id', $womIds)->get()->pluck('id');
         if ($noLongerInClan) {
             CollectionLog::whereIn('runescape_users_id', $noLongerInClan)->delete();
             BossPersonalBest::whereIn('runescape_users_id', $noLongerInClan)->delete();
-            RunescapeUser::whereIn('id', $noLongerInClan)->delete();
+            RunescapeUser::where('clan_id', '=', $clan->id)->whereIn('id', $noLongerInClan)->delete();
         }
 
     }
